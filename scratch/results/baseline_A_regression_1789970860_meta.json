@@ -1,0 +1,109 @@
+{
+  "run_name": "baseline_A_regression_1789970860",
+  "variant": "A",
+  "epochs_ran": 73,
+  "epochs_requested": 60,
+  "lr": 0.0001,
+  "aug_strength": 1.0,
+  "dropout": 0.3,
+  "dense_units": 128,
+  "head": "regression",
+  "final_model_path": "C:\\Users\\MCS.DESKTOP-744KNRC\\Documents\\PROJECTS\\HemoSense AI Fuzzy Logic-Based Smartphone Anemia Screening with Dietary Intelligence\\scratch\\saved_models\\baseline_A_regression_1789970860_final.keras",
+  "best_ckpt_path": "C:\\Users\\MCS.DESKTOP-744KNRC\\Documents\\PROJECTS\\HemoSense AI Fuzzy Logic-Based Smartphone Anemia Screening with Dietary Intelligence\\scratch\\saved_models\\baseline_A_regression_1789970860_best.keras",
+  "test_metrics": {
+    "overall_mae": 1.4917850079743757,
+    "overall_rmse": 1.8912994331394757,
+    "n_test": 92,
+    "severity_4class_accuracy": 0.6956521739130435,
+    "severity_4class_per_class": {
+      "Severe": {
+        "recall": 0.0,
+        "n_true": 1
+      },
+      "Moderate": {
+        "recall": 0.18181818181818182,
+        "n_true": 11
+      },
+      "Mild": {
+        "recall": 0.375,
+        "n_true": 24
+      },
+      "Normal": {
+        "recall": 0.9464285714285714,
+        "n_true": 56
+      }
+    },
+    "binary_screening": {
+      "threshold_g_dl": 12.0,
+      "accuracy": 0.7717391304347826,
+      "sensitivity": 0.5,
+      "specificity": 0.9464285714285714,
+      "precision": 0.8571428571428571,
+      "f1": 0.631578947368421,
+      "confusion": {
+        "tp": 18,
+        "tn": 53,
+        "fp": 3,
+        "fn": 18
+      }
+    },
+    "per_severity_class": {
+      "Mild": {
+        "mae": 1.0803510348002117,
+        "rmse": 1.24222394115413,
+        "severity_4class_accuracy": 0.375,
+        "binary_accuracy": 0.375,
+        "sensitivity": 0.375,
+        "specificity": null,
+        "n": 24
+      },
+      "Moderate": {
+        "mae": 2.4133712595159356,
+        "rmse": 2.6941059542427235,
+        "severity_4class_accuracy": 0.18181818181818182,
+        "binary_accuracy": 0.8181818181818182,
+        "sensitivity": 0.8181818181818182,
+        "specificity": null,
+        "n": 11
+      },
+      "Normal": {
+        "mae": 1.3954347712653024,
+        "rmse": 1.7337401406127675,
+        "severity_4class_accuracy": 0.9464285714285714,
+        "binary_accuracy": 0.9464285714285714,
+        "sensitivity": null,
+        "specificity": 0.9464285714285714,
+        "n": 56
+      },
+      "Severe": {
+        "mae": 6.624364852905273,
+        "rmse": 6.624364852905273,
+        "severity_4class_accuracy": 0.0,
+        "binary_accuracy": 0.0,
+        "sensitivity": 0.0,
+        "specificity": null,
+        "n": 1
+      }
+    },
+    "per_region": {
+      "India": {
+        "mae": 1.5171295663584834,
+        "rmse": 1.8364388746723952,
+        "severity_4class_accuracy": 0.5217391304347826,
+        "binary_accuracy": 0.6521739130434783,
+        "sensitivity": 0.38461538461538464,
+        "specificity": 1.0,
+        "n": 46
+      },
+      "Italy": {
+        "mae": 1.4664404495902683,
+        "rmse": 1.9446129052280279,
+        "severity_4class_accuracy": 0.8695652173913043,
+        "binary_accuracy": 0.8913043478260869,
+        "sensitivity": 0.8,
+        "specificity": 0.9166666666666666,
+        "n": 46
+      }
+    }
+  }
+}

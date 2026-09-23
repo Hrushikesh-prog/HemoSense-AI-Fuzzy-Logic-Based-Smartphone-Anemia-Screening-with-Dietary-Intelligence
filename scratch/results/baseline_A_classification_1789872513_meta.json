@@ -1,0 +1,17 @@
+{
+  "run_name": "baseline_A_classification_1789872513",
+  "variant": "A",
+  "epochs_ran": 60,
+  "epochs_requested": 50,
+  "lr": 0.0001,
+  "aug_strength": 1.0,
+  "dropout": 0.3,
+  "dense_units": 128,
+  "head": "classification",
+  "final_model_path": "C:\\Users\\MCS.DESKTOP-744KNRC\\Documents\\PROJECTS\\HemoSense AI Fuzzy Logic-Based Smartphone Anemia Screening with Dietary Intelligence\\scratch\\saved_models\\baseline_A_classification_1789872513_final.keras",
+  "best_ckpt_path": "C:\\Users\\MCS.DESKTOP-744KNRC\\Documents\\PROJECTS\\HemoSense AI Fuzzy Logic-Based Smartphone Anemia Screening with Dietary Intelligence\\scratch\\saved_models\\baseline_A_classification_1789872513_best.keras",
+  "test_metrics": {
+    "accuracy": 0.6916666626930237,
+    "loss": 0.7298480868339539
+  }
+}

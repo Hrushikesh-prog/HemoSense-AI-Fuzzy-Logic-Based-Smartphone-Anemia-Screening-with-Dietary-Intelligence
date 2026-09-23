@@ -1,0 +1,96 @@
+{
+  "overall_mae": 1.4039849198382834,
+  "overall_rmse": 1.8692249821772278,
+  "n_test": 92,
+  "severity_4class_accuracy": 0.7065217391304348,
+  "severity_4class_per_class": {
+    "Severe": {
+      "recall": 0.0,
+      "n_true": 1
+    },
+    "Moderate": {
+      "recall": 0.18181818181818182,
+      "n_true": 11
+    },
+    "Mild": {
+      "recall": 0.6666666666666666,
+      "n_true": 24
+    },
+    "Normal": {
+      "recall": 0.8392857142857143,
+      "n_true": 56
+    }
+  },
+  "binary_screening": {
+    "threshold_g_dl": 12.0,
+    "accuracy": 0.8152173913043478,
+    "sensitivity": 0.7777777777777778,
+    "specificity": 0.8392857142857143,
+    "precision": 0.7567567567567568,
+    "f1": 0.7671232876712328,
+    "confusion": {
+      "tp": 28,
+      "tn": 47,
+      "fp": 9,
+      "fn": 8
+    }
+  },
+  "per_severity_class": {
+    "Mild": {
+      "mae": 0.8421188990275065,
+      "rmse": 1.1400351031258544,
+      "severity_4class_accuracy": 0.6666666666666666,
+      "binary_accuracy": 0.7083333333333334,
+      "sensitivity": 0.7083333333333334,
+      "specificity": null,
+      "n": 24
+    },
+    "Moderate": {
+      "mae": 1.7873154553500088,
+      "rmse": 2.0577152834851855,
+      "severity_4class_accuracy": 0.18181818181818182,
+      "binary_accuracy": 1.0,
+      "sensitivity": 1.0,
+      "specificity": null,
+      "n": 11
+    },
+    "Normal": {
+      "mae": 1.4616068261010307,
+      "rmse": 1.8334547754869905,
+      "severity_4class_accuracy": 0.8392857142857143,
+      "binary_accuracy": 0.8392857142857143,
+      "sensitivity": null,
+      "specificity": 0.8392857142857143,
+      "n": 56
+    },
+    "Severe": {
+      "mae": 7.445306777954102,
+      "rmse": 7.445306777954102,
+      "severity_4class_accuracy": 0.0,
+      "binary_accuracy": 0.0,
+      "sensitivity": 0.0,
+      "specificity": null,
+      "n": 1
+    }
+  },
+  "per_region": {
+    "India": {
+      "mae": 1.3650908262833306,
+      "rmse": 1.7738995291814588,
+      "severity_4class_accuracy": 0.5434782608695652,
+      "binary_accuracy": 0.717391304347826,
+      "sensitivity": 0.7307692307692307,
+      "specificity": 0.7,
+      "n": 46
+    },
+    "Italy": {
+      "mae": 1.4428790133932363,
+      "rmse": 1.9599195208887312,
+      "severity_4class_accuracy": 0.8695652173913043,
+      "binary_accuracy": 0.9130434782608695,
+      "sensitivity": 0.9,
+      "specificity": 0.9166666666666666,
+      "n": 46
+    }
+  }
+}
