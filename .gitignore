@@ -27,3 +27,7 @@ Thumbs.db
 *.pth
 *.pt
 *.onnx
+
+# Environment / secrets
+.env
+api/.env
