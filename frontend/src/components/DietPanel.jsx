@@ -1,10 +1,13 @@
 import ReactMarkdown from 'react-markdown'
+import Icon from './Icon.jsx'
 
-function List({ title, items }) {
+function List({ title, items, icon, accent }) {
   if (!items?.length) return null
   return (
-    <div className="diet-block">
-      <h3 className="subhead">{title}</h3>
+    <div className={`diet-block accent-${accent}`}>
+      <h3>
+        <Icon name={icon} size={16} /> {title}
+      </h3>
       <ul>
         {items.map((i) => (
           <li key={i}>{i}</li>
@@ -15,72 +18,115 @@ function List({ title, items }) {
 }
 
 export default function DietPanel({ plan, diet, onRetry }) {
+  const meals = Object.entries(plan.sample_day || {})
+
   return (
     <section className="card">
       <div className="card-head">
-        <h2>Recovery diet plan</h2>
-        <span className="muted small">{plan.diet_type} diet</span>
-      </div>
-      <p className="diet-goal">{plan.goal}</p>
-
-      <div className="diet-grid">
-        <List title="Iron-rich foods to prioritise" items={plan.iron_rich_foods} />
-        <List title="Pair with vitamin C" items={plan.pair_with_vitamin_c} />
-        <List title="Avoid or limit" items={plan.avoid_or_limit} />
-        <List title="Extra tips for you" items={plan.extra_tips} />
-      </div>
-
-      {Object.keys(plan.sample_day || {}).length > 0 && (
-        <div className="diet-block">
-          <h3 className="subhead">Sample day</h3>
-          <table className="meal-table">
-            <tbody>
-              {Object.entries(plan.sample_day).map(([meal, text]) => (
-                <tr key={meal}>
-                  <th>{meal}</th>
-                  <td>{text}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      <div className="diet-callouts">
-        <div className="callout">
-          <strong>When to see a clinician</strong>
-          <p>{plan.when_to_see_clinician}</p>
-        </div>
-        <div className="callout">
-          <strong>Recovery outlook</strong>
-          <p>{plan.recovery_outlook}</p>
+        <div className="card-title">
+          <div className="card-icon green">
+            <Icon name="leaf" />
+          </div>
+          <div>
+            <h2>Dietary intelligence</h2>
+            <p>Recovery nutrition plan · {plan.diet_type} diet</p>
+          </div>
         </div>
       </div>
 
-      <div className="ai-diet">
-        <div className="card-head">
-          <h3>AI-personalised recommendations</h3>
-          {diet.status === 'ok' && <span className="muted small">via {diet.model_used}</span>}
-        </div>
-        {diet.status === 'loading' && (
-          <p className="muted">
-            <span className="spinner dark" /> Generating a plan tailored to your result and details…
-          </p>
-        )}
-        {diet.status === 'error' && (
-          <div className="alert alert-warn small">
-            AI recommendations are unavailable right now ({diet.message}). The plan above still
-            applies.{' '}
-            <button className="link" onClick={onRetry}>
-              Try again
-            </button>
+      <div className="card-body">
+        {plan.goal && (
+          <div className="diet-goal">
+            <Icon name="trending" />
+            <span>{plan.goal}</span>
           </div>
         )}
-        {diet.status === 'ok' && (
-          <div className="markdown">
-            <ReactMarkdown>{diet.recommendations}</ReactMarkdown>
+
+        <div className={`diet-layout ${meals.length ? 'with-meals' : ''}`}>
+          <div className="diet-grid">
+            <List title="Iron-rich foods" items={plan.iron_rich_foods} icon="droplet" accent="red" />
+            <List title="Pair with vitamin C" items={plan.pair_with_vitamin_c} icon="zap" accent="amber" />
+            <List title="Avoid or limit" items={plan.avoid_or_limit} icon="ban" accent="blue" />
+            <List title="Tips for you" items={plan.extra_tips} icon="bulb" accent="green" />
           </div>
-        )}
+
+          {meals.length > 0 && (
+            <div className="diet-block">
+              <h3>
+                <Icon name="utensils" size={16} /> Sample day
+              </h3>
+              <ol className="timeline">
+                {meals.map(([meal, text]) => (
+                  <li key={meal}>
+                    <div className="meal">{meal}</div>
+                    <p>{text}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          )}
+        </div>
+
+        <div className="callouts">
+          <div className="callout">
+            <Icon name="shield" />
+            <div>
+              <strong>When to see a clinician</strong>
+              <p>{plan.when_to_see_clinician}</p>
+            </div>
+          </div>
+          <div className="callout">
+            <Icon name="trending" />
+            <div>
+              <strong>Recovery outlook</strong>
+              <p>{plan.recovery_outlook}</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="ai-panel">
+          <div className="ai-head">
+            <h3>
+              <Icon name="sparkles" size={16} /> AI-personalised recommendations
+            </h3>
+            <div className="spacer" />
+            {diet.status === 'ok' && <span className="muted xs">Generated by {diet.model_used}</span>}
+            {diet.status === 'loading' && (
+              <span className="muted xs" style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                <span className="spinner dark" style={{ width: 12, height: 12 }} /> Generating…
+              </span>
+            )}
+          </div>
+          <div className="ai-body">
+            {diet.status === 'loading' && (
+              <div className="skeleton" aria-label="Loading recommendations">
+                <span style={{ width: '92%' }} />
+                <span style={{ width: '78%' }} />
+                <span style={{ width: '85%' }} />
+                <span style={{ width: '60%' }} />
+              </div>
+            )}
+            {diet.status === 'error' && (
+              <div className="alert alert-warn">
+                <Icon name="alert" />
+                <div>
+                  <div className="alert-title">AI recommendations are unavailable</div>
+                  <p>
+                    {diet.message} The plan above still applies.{' '}
+                    <button className="link" onClick={onRetry}>
+                      Try again
+                    </button>
+                  </p>
+                </div>
+              </div>
+            )}
+            {diet.status === 'ok' && (
+              <div className="markdown">
+                <ReactMarkdown>{diet.recommendations}</ReactMarkdown>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </section>
   )

@@ -1,8 +1,16 @@
 import { useRef, useState } from 'react'
 import { MAX_IMAGES, MIN_IMAGES } from '../api.js'
+import Icon from './Icon.jsx'
 
 const ACCEPTED = ['image/jpeg', 'image/png', 'image/webp', 'image/bmp']
 const MAX_MB = 10
+
+const TIPS = [
+  { icon: 'sun', title: 'Even daylight', text: 'Avoid coloured or dim light.' },
+  { icon: 'eye', title: 'Show the lining', text: 'Gently pull the lower eyelid down.' },
+  { icon: 'camera', title: '10–15 cm away', text: 'Steady, no filters or flash glare.' },
+  { icon: 'image', title: 'Both eyes', text: 'Several angles give a stronger result.' },
+]
 
 let nextId = 1
 
@@ -31,7 +39,7 @@ export default function PhotoUploader({ photos, setPhotos, disabled }) {
       url: URL.createObjectURL(file),
     }))
     if (added.length) setPhotos((prev) => [...prev, ...added])
-    setNotice(rejected.length ? rejected.join(' · ') : null)
+    setNotice(rejected.length ? rejected : null)
   }
 
   function remove(id) {
@@ -43,68 +51,131 @@ export default function PhotoUploader({ photos, setPhotos, disabled }) {
   }
 
   const full = photos.length >= MAX_IMAGES
+  const locked = full || disabled
   const pct = Math.min(100, (photos.length / MAX_IMAGES) * 100)
+  const pick = () => fileInput.current?.click()
 
   return (
     <section className="card">
       <div className="card-head">
-        <h2>
-          <span className="step">1</span> Eye photos
-        </h2>
-        <span className={`counter ${photos.length >= MIN_IMAGES ? 'ok' : ''}`}>
-          {photos.length} / {MAX_IMAGES}
-        </span>
-      </div>
-      <div className="progress" aria-hidden="true">
-        <div className="progress-bar" style={{ width: `${pct}%` }} />
-        <div className="progress-min" style={{ left: `${(MIN_IMAGES / MAX_IMAGES) * 100}%` }} />
+        <div className="card-title">
+          <div className="card-icon">
+            <Icon name="camera" />
+          </div>
+          <div>
+            <h2>Conjunctiva photos</h2>
+            <p>
+              Upload {MIN_IMAGES}–{MAX_IMAGES} close-ups of the lower eyelid
+            </p>
+          </div>
+        </div>
+        <div className={`counter ${photos.length >= MIN_IMAGES ? 'ok' : ''}`}>
+          <div className="meter" aria-hidden="true">
+            <div className="meter-bar" style={{ width: `${pct}%` }} />
+          </div>
+          <span>
+            <strong>{photos.length}</strong> / {MAX_IMAGES}
+          </span>
+        </div>
       </div>
 
-      <div
-        className={`dropzone ${dragging ? 'dragging' : ''} ${full || disabled ? 'disabled' : ''}`}
-        onDragOver={(e) => {
-          e.preventDefault()
-          if (!full && !disabled) setDragging(true)
-        }}
-        onDragLeave={() => setDragging(false)}
-        onDrop={(e) => {
-          e.preventDefault()
-          setDragging(false)
-          if (!full && !disabled) addFiles(e.dataTransfer.files)
-        }}
-      >
-        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path
-            d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"
-            stroke="currentColor"
-            strokeWidth="1.6"
-          />
-          <circle cx="12" cy="12" r="3.2" stroke="currentColor" strokeWidth="1.6" />
-        </svg>
-        <p>
-          <strong>Drag & drop</strong> eye photos here
-        </p>
-        <div className="dropzone-buttons">
-          <button
-            type="button"
-            className="btn"
-            disabled={full || disabled}
-            onClick={() => fileInput.current?.click()}
+      <div className="card-body">
+        {photos.length === 0 ? (
+          <div
+            className={`dropzone ${dragging ? 'dragging' : ''} ${locked ? 'disabled' : ''}`}
+            onDragOver={(e) => {
+              e.preventDefault()
+              if (!locked) setDragging(true)
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={(e) => {
+              e.preventDefault()
+              setDragging(false)
+              if (!locked) addFiles(e.dataTransfer.files)
+            }}
           >
-            Choose files
-          </button>
-          <button
-            type="button"
-            className="btn"
-            disabled={full || disabled}
-            onClick={() => cameraInput.current?.click()}
+            <div className="dropzone-icon">
+              <Icon name="upload" size={22} />
+            </div>
+            <h3>Drag and drop eye photos here</h3>
+            <div className="dropzone-buttons">
+              <button type="button" className="btn" disabled={locked} onClick={pick}>
+                <Icon name="image" size={16} /> Browse files
+              </button>
+              <button
+                type="button"
+                className="btn"
+                disabled={locked}
+                onClick={() => cameraInput.current?.click()}
+              >
+                <Icon name="camera" size={16} /> Use camera
+              </button>
+            </div>
+            <p className="hint">JPG, PNG, WEBP or BMP · up to {MAX_MB} MB each</p>
+          </div>
+        ) : (
+          <ul
+            className="thumbs"
+            style={{ marginTop: 0 }}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault()
+              if (!locked) addFiles(e.dataTransfer.files)
+            }}
           >
-            Take photo
-          </button>
-        </div>
-        <p className="muted small">
-          JPG, PNG, WEBP or BMP · up to {MAX_MB} MB each · {MIN_IMAGES}–{MAX_IMAGES} photos
-        </p>
+            {photos.map((p, i) => (
+              <li key={p.id} className="thumb">
+                <img src={p.url} alt={`Eye photo ${i + 1}`} />
+                <span className="thumb-index">#{i + 1}</span>
+                {!disabled && (
+                  <button
+                    type="button"
+                    className="thumb-remove"
+                    aria-label={`Remove photo ${i + 1}`}
+                    onClick={() => remove(p.id)}
+                  >
+                    <Icon name="x" size={14} strokeWidth={2.4} />
+                  </button>
+                )}
+              </li>
+            ))}
+            {!locked && (
+              <li>
+                <button type="button" className="thumb-add" onClick={pick}>
+                  <Icon name="plus" size={20} />
+                  Add photo
+                </button>
+              </li>
+            )}
+          </ul>
+        )}
+
+        {notice && (
+          <div className="alert alert-warn" style={{ marginTop: 14 }}>
+            <Icon name="alert" />
+            <div>
+              <div className="alert-title">Some files were not added</div>
+              <ul>
+                {notice.map((n) => (
+                  <li key={n}>{n}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        )}
+
+        <ul className="tips">
+          {TIPS.map((t) => (
+            <li key={t.title}>
+              <Icon name={t.icon} size={16} />
+              <span>
+                <strong>{t.title}</strong>
+                {t.text}
+              </span>
+            </li>
+          ))}
+        </ul>
+
         <input
           ref={fileInput}
           type="file"
@@ -128,39 +199,6 @@ export default function PhotoUploader({ photos, setPhotos, disabled }) {
           }}
         />
       </div>
-
-      {notice && <div className="alert alert-warn small">{notice}</div>}
-
-      {photos.length > 0 && (
-        <ul className="thumbs">
-          {photos.map((p, i) => (
-            <li key={p.id} className="thumb">
-              <img src={p.url} alt={`Eye photo ${i + 1}`} />
-              <span className="thumb-index">{i + 1}</span>
-              {!disabled && (
-                <button
-                  type="button"
-                  className="thumb-remove"
-                  aria-label={`Remove photo ${i + 1}`}
-                  onClick={() => remove(p.id)}
-                >
-                  ×
-                </button>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <details className="tips">
-        <summary>Tips for a good photo</summary>
-        <ul>
-          <li>Use natural daylight or bright, even indoor light — avoid coloured light.</li>
-          <li>Gently pull the lower eyelid down so the pink inner lining is visible.</li>
-          <li>Hold the phone 10–15 cm away and keep it steady; no filters or flash glare.</li>
-          <li>Take photos of both eyes, from slightly different angles, for a stronger result.</li>
-        </ul>
-      </details>
     </section>
   )
 }

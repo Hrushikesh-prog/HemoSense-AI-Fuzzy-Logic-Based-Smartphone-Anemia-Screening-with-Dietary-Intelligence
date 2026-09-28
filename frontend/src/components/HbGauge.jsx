@@ -13,32 +13,33 @@ const pos = (v) => ((Math.min(Math.max(v, SCALE_MIN), SCALE_MAX) - SCALE_MIN) / 
 
 export default function HbGauge({ value, min, max }) {
   return (
-    <div className="gauge" aria-label={`Hemoglobin ${value} g/dL`}>
+    <div className="gauge" role="img" aria-label={`Hemoglobin ${value.toFixed(1)} g/dL`}>
       <div className="gauge-track">
         {BANDS.map((b) => (
-          <div
-            key={b.name}
-            className={`gauge-band band-${b.cls}`}
-            style={{ left: `${pos(b.from)}%`, width: `${pos(b.to) - pos(b.from)}%` }}
-          >
-            <span>{b.name}</span>
-          </div>
+          <div key={b.name} className={`gauge-band band-${b.cls}`} style={{ width: `${pos(b.to) - pos(b.from)}%` }} />
         ))}
-        {min != null && max != null && (
-          <div className="gauge-range" style={{ left: `${pos(min)}%`, width: `${Math.max(pos(max) - pos(min), 0.5)}%` }} />
+        {min != null && max != null && max > min && (
+          <div className="gauge-range" style={{ left: `${pos(min)}%`, width: `${pos(max) - pos(min)}%` }} />
         )}
         <div className="gauge-marker" style={{ left: `${pos(value)}%` }}>
-          <span>{value.toFixed(1)}</span>
+          <span>{value.toFixed(1)} g/dL</span>
         </div>
       </div>
-      <div className="gauge-ticks">
-        {[4, 7, 10, 12, 18].map((t) => (
-          <span key={t} style={{ left: `${pos(t)}%` }}>
+      <div className="gauge-labels">
+        {[7, 10, 12].map((t) => (
+          <span key={t} className="tick" style={{ left: `${pos(t)}%` }}>
             {t}
           </span>
         ))}
+        {BANDS.map((b) => (
+          <span key={b.name} className="name" style={{ left: `${(pos(b.from) + pos(b.to)) / 2}%` }}>
+            {b.name}
+          </span>
+        ))}
       </div>
-      <p className="muted small">Hemoglobin, g/dL · shaded bar shows the range across your photos</p>
+      <p className="gauge-caption">
+        Severity bands used by the model (g/dL). Outlined region shows the spread across your photos.
+      </p>
     </div>
   )
 }

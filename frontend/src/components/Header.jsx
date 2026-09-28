@@ -12,10 +12,15 @@ export default function Header({ health, healthError }) {
     <header className="header">
       <div className="container header-inner">
         <div className="brand">
-          <img src="/favicon.svg" alt="" width="28" height="28" />
-          <span>
-            HemoSense <strong>AI</strong>
-          </span>
+          <div className="brand-mark">
+            <img src="/favicon.svg" alt="" />
+          </div>
+          <div>
+            <div className="brand-name">
+              HemoSense <span>AI</span>
+            </div>
+            <div className="brand-sub">Non-invasive anemia screening</div>
+          </div>
         </div>
         <div className="header-status">
           <span className={`status status-${status.cls}`} title={title}>
@@ -23,10 +28,10 @@ export default function Header({ health, healthError }) {
           </span>
           {health && (
             <span
-              className={`status status-${health.llm?.configured ? 'up' : 'warn'}`}
+              className={`status status-llm status-${health.llm?.configured ? 'up' : 'warn'}`}
               title={health.llm?.configured ? 'OpenRouter key configured' : 'OPENROUTER_API_KEY not set'}
             >
-              <span className="dot" /> {health.llm?.configured ? 'AI diet on' : 'AI diet off'}
+              <span className="dot" /> {health.llm?.configured ? 'AI diet online' : 'AI diet offline'}
             </span>
           )}
         </div>
