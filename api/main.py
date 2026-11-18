@@ -4,14 +4,14 @@ HemoSense FastAPI server.
 
 Endpoints
   GET  /health                  model status + saved metrics
-  POST /screen                  upload eye/face photo -> Hb estimate + severity + EI
-  POST /screen/batch            upload 2-10 eye photos -> aggregated verdict + symptoms + diet plan
+  POST /screen                  upload one eyelid photo -> ANFIS anemia risk + grade + explanation
+  POST /screen/batch            upload 1-10 eyelid photos (+ optional boxes) -> verdict + symptoms + diet plan
   GET  /symptoms                symptom checklist for the UI
   POST /screen/roi              upload photo -> raw & fuzzy-corrected ROI images
   POST /diet/recommendations    screening data (or photo) -> LLM dietary guidance
   GET  /diet/usage              in-process LLM request counters per model
 
-Run (repo root, project env with tensorflow<2.17):
+Run (repo root; needs numpy, opencv, pillow, fastapi - no tensorflow):
     uvicorn api.main:app --reload --port 8000
 """
 
@@ -28,7 +28,7 @@ from api import clinical
 from api import config
 from api import llm
 from api import pipeline
-from api.schemas import DietRecommendationRequest, ScreeningResult
+from api.schemas import DietPlanRequest, DietRecommendationRequest
 
 
 @asynccontextmanager
@@ -40,7 +40,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="HemoSense API",
     version="1.0.0",
-    description="Smartphone anemia screening (CNN) + LLM dietary intelligence.",
+    description="Smartphone anemia screening (ANFIS fuzzy model) + dietary intelligence.",
     lifespan=lifespan,
 )
 
@@ -61,9 +61,8 @@ async def _pipeline_unavailable(request, exc):
         content={
             "detail": "model_unavailable",
             "error": exc.reason,
-            "hint": "Run the API in the project environment (Python 3.11/3.12, "
-                    "tensorflow<2.17, opencv-python, scikit-fuzzy) or set "
-                    "HEMOSENSE_MODEL_PATH to a valid .keras file.",
+            "hint": "Create models/anfis.json with `python -m research.run_experiment` "
+                    "or set HEMOSENSE_MODEL_PATH to a valid anfis.json.",
         },
     )
 
@@ -131,29 +130,53 @@ async def health():
 # ---------------------------------------------------------------------------
 # Screening
 # ---------------------------------------------------------------------------
-@app.post("/screen", response_model=ScreeningResult, tags=["screening"])
-async def screen(image: Annotated[UploadFile, File(description="Eye/face photo (jpg/png)")]):
+@app.post("/screen", tags=["screening"])
+async def screen(
+    image: Annotated[UploadFile, File(description="Eyelid photo (jpg/png)")],
+    box: Annotated[Optional[str], Form(description="Optional JSON [x, y, w, h] in 0..1 over the eyelid")] = None,
+):
+    """Screens one photo. Rejections return 422 with a machine-readable `code`."""
+    img_bytes = await _read_upload(image)
     try:
-        img_bytes = await _read_upload(image)
-        result = pipeline.screen_image_bytes(img_bytes)
+        result = pipeline.screen_image_bytes(img_bytes, include_roi=True, box=_parse_box(box))
+    except pipeline.ImageQualityError as exc:
+        raise HTTPException(status_code=422, detail={"code": exc.code, "message": exc.message})
     except ValueError as exc:
         raise _http_bad_from_value_error(exc)
-    result["disclaimer"] = (
-        "Screening estimate only — not a medical diagnosis. Consult a clinician."
-    )
+    result["disclaimer"] = DISCLAIMER
     return result
+
+
+DISCLAIMER = ("Screening only, not a diagnosis. Confirm with a blood test (CBC) "
+              "and consult a clinician.")
+
+
+def _parse_box(raw) -> Optional[list]:
+    """Box = [x, y, w, h] as fractions of the (EXIF-rotated) photo; None -> default box."""
+    if raw is None or raw == "":
+        return None
+    try:
+        box = json.loads(raw) if isinstance(raw, str) else raw
+        if isinstance(box, dict):
+            box = [box["x"], box["y"], box["w"], box["h"]]
+        box = [float(v) for v in box]
+        if len(box) != 4 or not all(0.0 <= v <= 1.0 for v in box):
+            raise ValueError
+        return box
+    except (ValueError, TypeError, KeyError):
+        raise HTTPException(status_code=400, detail="box must be [x, y, w, h] with values in 0..1")
 
 
 @app.post("/screen/batch", tags=["screening"])
 async def screen_batch(
     images: Annotated[List[UploadFile], File(
-        description=f"{clinical.MIN_IMAGES}-{clinical.MAX_IMAGES} eye photos of the same person")],
+        description=f"{clinical.MIN_IMAGES}-{clinical.MAX_IMAGES} eyelid photos of the same person")],
     data: Annotated[Optional[str], Form(
-        description='Optional JSON {"user_context": {...}} (age, sex, pregnant, diet, '
-                    'region, allergies, symptoms)')] = None,
+        description='Optional JSON {"user_context": {...}, "roi_boxes": [[x,y,w,h], ...]} '
+                    '(boxes in 0..1, one per image, in upload order)')] = None,
 ):
     """Screens every photo, then aggregates them into one verdict with the typical
-    symptoms for the detected severity and a baseline (non-LLM) diet plan."""
+    symptoms for the detected grade and a baseline (non-LLM) diet plan."""
     if not (clinical.MIN_IMAGES <= len(images) <= clinical.MAX_IMAGES):
         raise HTTPException(
             status_code=400,
@@ -161,10 +184,17 @@ async def screen_batch(
                    f"photos (got {len(images)}).",
         )
 
-    user_context = {}
+    user_context, boxes = {}, []
     if data:
         try:
-            req = DietRecommendationRequest.model_validate_json(data)
+            raw = json.loads(data)
+        except json.JSONDecodeError:
+            raise HTTPException(status_code=422, detail="data must be valid JSON")
+        if not isinstance(raw, dict):
+            raise HTTPException(status_code=422, detail="data must be a JSON object")
+        boxes = raw.pop("roi_boxes", None) or []
+        try:
+            req = DietRecommendationRequest.model_validate(raw)
         except ValidationError as exc:
             raise HTTPException(status_code=422, detail=json.loads(exc.json()))
         if req.user_context:
@@ -175,25 +205,29 @@ async def screen_batch(
         row = {"index": idx, "filename": image.filename}
         try:
             img_bytes = await _read_upload(image)
-            row.update(pipeline.screen_image_bytes(img_bytes, include_roi=True))
+            box = _parse_box(boxes[idx]) if idx < len(boxes) else None
+            row.update(pipeline.screen_image_bytes(img_bytes, include_roi=True, box=box))
+        except pipeline.ImageQualityError as exc:
+            row.update(error=exc.message, error_code=exc.code)
         except HTTPException as exc:
             row["error"] = str(exc.detail)
         except ValueError as exc:
-            row["error"] = f"Bad image: {exc}"
+            row.update(error=f"Bad image: {exc}", error_code="bad_image")
         per_image.append(row)
 
     valid = [r for r in per_image if "error" not in r]
     if len(valid) < clinical.MIN_IMAGES:
+        first = next((r for r in per_image if r.get("error_code")), per_image[0])
         raise HTTPException(
             status_code=422,
             detail={
-                "message": f"Only {len(valid)} photo(s) could be analysed; at least "
-                           f"{clinical.MIN_IMAGES} are needed.",
+                "code": first.get("error_code", "image_quality"),
+                "message": first.get("error", "The photo could not be analysed."),
                 "per_image": per_image,
             },
         )
 
-    aggregate = clinical.aggregate_screenings(valid)
+    aggregate = clinical.aggregate_screenings(valid, pipeline.confidence_table())
     return {
         "aggregate": aggregate,
         "per_image": per_image,
@@ -201,8 +235,7 @@ async def screen_batch(
                                             user_context.get("symptoms")),
         "diet_plan": clinical.baseline_diet_plan(aggregate["severity_class"], user_context),
         "model": pipeline.get_state().get("name"),
-        "disclaimer": "Screening estimate only — not a medical diagnosis. "
-                      "Confirm with a blood test (CBC) and consult a clinician.",
+        "disclaimer": DISCLAIMER,
     }
 
 
@@ -213,11 +246,14 @@ async def symptoms():
 
 
 @app.post("/screen/roi", tags=["screening"])
-async def screen_roi(image: Annotated[UploadFile, File(description="Eye/face photo (jpg/png)")]):
-    """Debug helper: returns raw + fuzzy-corrected conjunctiva ROIs as PNG data-URLs."""
+async def screen_roi(
+    image: Annotated[UploadFile, File(description="Eyelid photo (jpg/png)")],
+    box: Annotated[Optional[str], Form(description="Optional JSON [x, y, w, h] in 0..1")] = None,
+):
+    """Debug helper: the box crop and the segmented conjunctiva as PNG data-URLs."""
     try:
         img_bytes = await _read_upload(image)
-        return JSONResponse(content=pipeline.roi_images_b64(img_bytes))
+        return JSONResponse(content=pipeline.roi_images_b64(img_bytes, _parse_box(box)))
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=f"Bad image: {exc}")
 
@@ -243,7 +279,7 @@ def _build_screening_payload(cls, data_json: Optional[str], image: Optional[Uplo
         payload["screening"] = screening.model_dump(exclude_none=True)
 
     if image is not None and (not payload.get("screening") or
-                              payload["screening"].get("predicted_hb_gdl") is None):
+                              payload["screening"].get("severity_class") is None):
         # convenience: screen the uploaded photo first, then recommend
         try:
             img_bytes = image.file.read()
@@ -258,16 +294,17 @@ def _build_screening_payload(cls, data_json: Optional[str], image: Optional[Uplo
             res = pipeline.screen_image_bytes(img_bytes)
         except pipeline.PipelineUnavailableError as exc:
             raise HTTPException(status_code=503, detail=f"model_unavailable: {exc.reason}")
+        except pipeline.ImageQualityError as exc:
+            raise HTTPException(status_code=422, detail={"code": exc.code, "message": exc.message})
         except ValueError as exc:
             raise HTTPException(status_code=400, detail=f"Bad image: {exc}")
         payload["screening"] = {
-            "predicted_hb_gdl": res["predicted_hb_gdl"],
             "severity_class": res["severity_class"],
             "anemic": res["anemic"],
         }
         payload["screening_source"] = "image"
 
-    if (not payload.get("screening")) or payload["screening"].get("predicted_hb_gdl") is None:
+    if (not payload.get("screening")) or payload["screening"].get("severity_class") is None:
         raise HTTPException(
             status_code=400,
             detail="No screening data: provide 'data' with a screening fragment or an 'image'.",
@@ -279,7 +316,7 @@ def _build_screening_payload(cls, data_json: Optional[str], image: Optional[Uplo
 async def diet_recommendations(
     data: Annotated[Optional[str], Form(
         description='JSON matching the DietRecommendationRequest schema, e.g. '
-                    '{"screening": {"predicted_hb_gdl": 11.3, "severity_class": "Mild", '
+                    '{"screening": {"severity_class": "Mild", '
                     '"anemic": true}}')] = None,
     image: Annotated[Optional[UploadFile], File(
         description="Optional photo to screen first (alternative to screening data)")] = None,
@@ -288,6 +325,51 @@ async def diet_recommendations(
 ):
     payload = _build_screening_payload(DietRecommendationRequest, data, image)
     return llm.generate_recommendations(payload, preferred_model=model, max_tokens=max_tokens)
+
+
+# ---------------------------------------------------------------------------
+# Personalised diet plan (AI planner grounded in USDA data, rules fallback)
+# ---------------------------------------------------------------------------
+@app.get("/diet/foods", tags=["diet"])
+async def diet_foods():
+    """Foods the planner can use (for the app's dislike picker)."""
+    from hemosense.diet import food_catalogue
+    return food_catalogue()
+
+
+@app.post("/diet/plan", tags=["diet"])
+async def diet_plan(req: DietPlanRequest):
+    """AI proposes meals, local dish names and cost estimates using ONLY the verified food list;
+    the server rejects anything else and recomputes every nutrient from USDA data. If the AI is
+    unavailable or invalid, the rule-based planner answers (generated_by = "rules")."""
+    from starlette.concurrency import run_in_threadpool
+
+    from hemosense.diet import ai_brief, evaluate_spec
+
+    ctx = req.user_context.model_dump(exclude_none=True) if req.user_context else {}
+    severity = req.severity_class if req.severity_class in clinical.SEVERITY_ORDER else "Normal"
+    system, user = ai_brief(ctx, severity)
+    holder = {}
+
+    def _validate(obj):
+        holder["plan"] = evaluate_spec(ctx, obj, ai_model="pending")
+        return obj
+
+    fallback_reason = None
+    try:
+        out = await run_in_threadpool(llm.chat_json, system, user, _validate, 2200)
+        plan = holder["plan"]
+        plan["ai_model"] = out["model_used"]
+    except llm.LlmError as exc:
+        fallback_reason = exc.message
+        plan = None
+    base = clinical.baseline_diet_plan(severity, ctx)
+    if plan is None:
+        base["warnings"] = base.get("warnings", []) + [f"AI planner unavailable ({fallback_reason}); "
+                                                       "showing the data-driven plan."]
+        return base
+    keep = {k: base[k] for k in ("goal", "extra_tips", "when_to_see_clinician", "recovery_outlook")}
+    return {**plan, **keep}
 
 
 # ---------------------------------------------------------------------------

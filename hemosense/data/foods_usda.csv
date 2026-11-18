@@ -1,0 +1,47 @@
+name,usda_description,group,diets,heme,phytate_rich,serving_measure,serving_amount,meals,allergens,fdc_id,serving_grams,serving_label,iron_mg,vitamin_c_mg,calcium_mg,protein_g,energy_kcal
+"Lentils (masoor-type dal), cooked","Lentils, mature seeds, cooked, boiled, without salt",legume,VLEO,0,1,cup,1.0,LD,,172421,198.0,1 x cup,3.33,1.5,19.0,9.02,116.0
+Chana / chickpeas,"Chickpeas (garbanzo beans, bengal gram), mature seeds, cooked, boiled, without salt",legume,VLEO,0,1,cup,1.0,LD,,173757,164.0,1 x cup,2.89,1.3,49.0,8.86,164.0
+Rajma / kidney beans,"Beans, kidney, red, mature seeds, cooked, boiled, without salt",legume,VLEO,0,1,cup,1.0,LD,,175194,177.0,1 x cup,2.94,1.2,28.0,8.67,127.0
+Lobia / black-eyed peas,"Cowpeas, common (blackeyes, crowder, southern), mature seeds, cooked, boiled, without salt",legume,VLEO,0,1,cup,1.0,LD,,173759,171.0,1 x cup,2.51,0.4,24.0,7.73,116.0
+Sprouted moong,"Mung beans, mature seeds, sprouted, raw",legume,VLEO,0,0,cup,1.0,BS,,169957,104.0,1 x cup,0.91,13.2,13.0,3.04,30.0
+Tofu,"Tofu, raw, firm, prepared with calcium sulfate",legume,VLEO,0,1,cup,0.5,LD,soy,172475,126.0,0.5 x cup,2.66,0.2,683.0,17.27,144.0
+Green peas,"Peas, green, cooked, boiled, drained, without salt",legume,VLEO,0,0,cup,1.0,LD,,170420,160.0,1 x cup,1.54,14.2,27.0,5.36,84.0
+Palak / spinach (cooked),"Spinach, cooked, boiled, drained, without salt",greens,VLEO,0,0,cup,1.0,LD,,168463,180.0,1 x cup,3.57,9.8,136.0,2.97,23.0
+Chaulai / amaranth leaves,"Amaranth leaves, cooked, boiled, drained, without salt",greens,VLEO,0,0,cup,1.0,LD,,169202,132.0,1 x cup,2.26,41.1,209.0,2.11,21.0
+Sarson / mustard greens,"Mustard greens, cooked, boiled, drained, without salt",greens,VLEO,0,0,cup,1.0,LD,,169257,140.0,"1 x cup, chopped",0.87,25.3,118.0,2.56,26.0
+Moringa / drumstick leaves,"Drumstick leaves, cooked, boiled, drained, without salt",greens,VLEO,0,0,cup,1.0,LD,,168417,42.0,"1 x cup, chopped",2.32,31.0,151.0,5.27,60.0
+Beet greens,"Beet greens, cooked, boiled, drained, without salt",greens,VLEO,0,0,cup,1.0,LD,,170376,144.0,"1 x cup (1"" pieces)",1.9,24.9,114.0,2.57,27.0
+"Millet, cooked (proso millet)","Millet, cooked",grain,VLEO,0,1,cup,1.0,BLD,,168871,174.0,1 x cup,0.63,0.0,3.0,3.51,119.0
+"Oats (dry, for porridge)","Cereals, oats, regular and quick, not fortified, dry",grain,VLEO,0,1,cup,0.5,B,gluten,173904,40.5,0.5 x cup,4.25,0.0,52.0,13.15,379.0
+Quinoa (cooked),"Quinoa, cooked",grain,VLEO,0,1,cup,1.0,LD,,168917,185.0,1 x cup,1.49,0.0,17.0,4.4,120.0
+Whole-wheat bread,"Bread, whole-wheat, commercially prepared",grain,VLEO,0,1,slice,2.0,BLD,gluten,172688,64.0,2 x slice,2.47,0.0,161.0,12.45,252.0
+Brown rice (cooked),"Rice, brown, long-grain, cooked (Includes foods for USDA's Food Distribution Program)",grain,VLEO,0,1,cup,1.0,LD,,169704,202.0,1 x cup,0.56,0.0,3.0,2.74,123.0
+Jowar / sorghum flour,"Sorghum flour, whole-grain",grain,VLEO,0,1,cup,0.25,BLD,,168943,30.2,0.25 x cup,3.14,0.8,12.0,8.43,359.0
+Boiled egg,"Egg, whole, cooked, hard-boiled",egg,EO,0,0,large,2.0,BS,egg,173424,100.0,2 x large,1.19,0.0,50.0,12.58,155.0
+Chicken liver,"Chicken, liver, all classes, cooked, simmered",meat,O,1,0,oz,3.0,LD,,171061,85.0,3 x oz,11.63,27.9,11.0,24.46,167.0
+Chicken breast,"Chicken, broilers or fryers, breast, meat only, cooked, roasted",meat,O,1,0,"breast, bone",1.0,LD,,171477,172.0,"1 x breast, bone and skin removed",1.04,0.0,15.0,31.02,165.0
+Goat meat (mutton),"Game meat, goat, cooked, roasted",meat,O,1,0,oz,3.0,LD,,175304,85.0,3 x oz,3.73,0.0,17.0,27.1,143.0
+Sardines,"Fish, sardine, Atlantic, canned in oil, drained solids with bone",fish,O,1,0,oz,3.0,LD,fish,175139,85.1,3 x oz,2.92,0.0,382.0,24.62,208.0
+Atlantic mackerel,"Fish, mackerel, Atlantic, cooked, dry heat",fish,O,1,0,oz,3.0,LD,fish,175120,85.0,3 x oz,1.57,0.4,15.0,23.85,262.0
+Carp (common carp),"Fish, carp, cooked, dry heat",fish,O,1,0,oz,3.0,LD,fish,174185,85.0,3 x oz,1.59,1.6,52.0,22.86,162.0
+Prawns / shrimp,"Crustaceans, shrimp, mixed species, cooked, moist heat (may contain additives to retain moisture)",fish,O,1,0,oz,3.0,LD,shellfish,171971,85.0,3 x oz,0.32,0.0,91.0,22.78,119.0
+Dates (khajur),"Dates, medjool",dried_fruit,VLEO,0,0,date,3.0,S,,168191,72.0,"3 x date, pitted",0.9,0.0,64.0,1.81,277.0
+Dried figs (anjeer),"Figs, dried, uncooked",dried_fruit,VLEO,0,0,fig,3.0,S,,174665,25.2,3 x fig,2.03,1.2,162.0,3.3,249.0
+Dried apricots,"Apricots, dried, sulfured, uncooked",dried_fruit,VLEO,0,0,half,6.0,S,,173941,21.0,6 x half,2.66,1.0,55.0,3.39,241.0
+Pumpkin seeds,"Seeds, pumpkin and squash seed kernels, dried",nuts_seeds,VLEO,0,1,oz,1.0,S,,170556,28.4,1 x oz,8.82,1.9,46.0,30.23,559.0
+Til / sesame seeds,"Seeds, sesame seeds, whole, dried",nuts_seeds,VLEO,0,1,tbsp,2.0,S,sesame,170150,18.0,2 x tbsp,14.55,0.0,975.0,17.73,573.0
+Peanuts (roasted),"Peanuts, all types, dry-roasted, without salt",nuts_seeds,VLEO,0,1,oz,1.0,S,peanut,173806,28.4,1 x oz,1.58,0.0,58.0,24.35,587.0
+Cashews (roasted),"Nuts, cashew nuts, dry roasted, without salt added",nuts_seeds,VLEO,0,1,oz,1.0,S,tree nut,170571,28.4,1 x oz,6.0,0.0,45.0,15.31,574.0
+Guava,"Guavas, common, raw",fruit_c,VLEO,0,0,fruit,1.0,BLSD,,173044,55.0,"1 x fruit, without refuse",0.26,228.3,18.0,2.55,68.0
+Orange,"Oranges, raw, all commercial varieties",fruit_c,VLEO,0,0,fruit,1.0,BLSD,,169097,131.0,"1 x fruit (2-5/8"" dia)",0.1,53.2,40.0,0.94,47.0
+Papaya,"Papayas, raw",fruit_c,VLEO,0,0,cup,1.0,BLSD,,169926,145.0,"1 x cup 1"" pieces",0.25,60.9,20.0,0.47,43.0
+Kiwi,"Kiwifruit, green, raw",fruit_c,VLEO,0,0,fruit,1.0,BLSD,,168153,69.0,"1 x fruit (2"" dia)",0.31,92.7,34.0,1.14,61.0
+Lemon juice (squeezed over food),"Lemon juice, raw",fruit_c,VLEO,0,0,lemon yields,1.0,LD,,167747,48.0,1 x lemon yields,0.08,38.7,6.0,0.35,22.0
+"Tomato (raw, salad)","Tomatoes, red, ripe, raw, year round average",veg_c,VLEO,0,0,medium,1.0,LD,,170457,123.0,"1 x medium whole (2-3/5"" dia)",0.27,13.7,10.0,0.88,18.0
+Red capsicum,"Peppers, sweet, red, raw",veg_c,VLEO,0,0,cup,0.5,LD,,170108,74.5,"0.5 x cup, chopped",0.43,127.7,7.0,0.99,26.0
+Cauliflower (cooked),"Cauliflower, cooked, boiled, drained, without salt",veg_c,VLEO,0,0,cup,1.0,LD,,170397,124.0,"1 x cup (1"" pieces)",0.32,44.3,16.0,1.84,23.0
+Broccoli (cooked),"Broccoli, cooked, boiled, drained, without salt",veg_c,VLEO,0,0,cup,1.0,LD,,169967,156.0,"1 x cup, chopped",0.67,64.9,40.0,2.38,35.0
+Milk,"Milk, whole, 3.25% milkfat, with added vitamin D",dairy,LEO,0,0,cup,1.0,BS,milk,171265,244.0,1 x cup,0.03,0.0,113.0,3.15,61.0
+Curd / plain yogurt,"Yogurt, plain, whole milk",dairy,LEO,0,0,cup,1.0,LD,milk,171284,245.0,1 x cup (8 fl oz),0.05,0.5,121.0,3.47,61.0
+Black tea,"Beverages, tea, black, brewed, prepared with tap water",beverage_inhib,VLEO,0,0,fl oz,8.0,BS,,173227,236.8,8 x fl oz,0.02,0.0,0.0,0.0,1.0
+Coffee,"Beverages, coffee, brewed, prepared with tap water",beverage_inhib,VLEO,0,0,fl oz,8.0,BS,,171890,236.8,8 x fl oz,0.01,0.0,2.0,0.12,1.0

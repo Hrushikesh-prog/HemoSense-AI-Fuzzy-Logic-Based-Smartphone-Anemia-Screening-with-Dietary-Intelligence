@@ -1,0 +1,13 @@
+.venv
+.git
+app
+frontend
+scratch
+research
+docs
+dataset
+**/__pycache__
+**/*.pyc
+*.log
+*.docx
+api/.env

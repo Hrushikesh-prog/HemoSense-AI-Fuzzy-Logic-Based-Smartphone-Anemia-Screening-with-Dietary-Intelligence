@@ -1,0 +1,30 @@
+# HemoSense production stack on one EC2 host.
+#   api   : FastAPI + ANFIS (no TensorFlow), internal only
+#   caddy : TLS termination (automatic Let's Encrypt for <ip>.sslip.io), HTTP->HTTPS,
+#           plain-HTTP fallback on the bare IP, security headers, body-size limit
+services:
+  api:
+    build: ..
+    image: hemosense-api:latest
+    restart: unless-stopped
+    env_file: ../../hemosense.env
+    expose: ["8000"]
+    logging: {driver: json-file, options: {max-size: "10m", max-file: "3"}}
+
+  caddy:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    depends_on: [api]
+    ports: ["80:80", "443:443"]
+    environment:
+      SITE_HOST: ${SITE_HOST}
+      PUBLIC_IP: ${PUBLIC_IP}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    logging: {driver: json-file, options: {max-size: "10m", max-file: "3"}}
+
+volumes:
+  caddy_data:
+  caddy_config:

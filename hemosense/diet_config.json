@@ -1,0 +1,32 @@
+{
+  "_note": "Every value here is a documented assumption, not food data. Food data come from hemosense/data/foods_usda.csv (USDA FoodData Central).",
+  "iron_rda_mg": {
+    "_source": "US NIH Office of Dietary Supplements, Iron fact sheet (RDA). Verify against ICMR-NIN 2020 before clinical use in India.",
+    "female_19_50": 18, "female_51_plus": 8, "male_19_plus": 8, "pregnant": 27, "adolescent_female_14_18": 15, "adolescent_male_14_18": 11
+  },
+  "absorption": {
+    "_source": "Simplified model from the project design; ranges consistent with Hurrell & Egli 2010 (mixed diets 14-18 %, vegetarian 5-12 % bioavailability).",
+    "heme": 0.25,
+    "non_heme": 0.10,
+    "enhancer_multiplier": 2.0,
+    "enhancer_min_vitamin_c_mg": 25,
+    "calcium_inhibition_multiplier": 0.7,
+    "calcium_inhibition_min_mg": 300,
+    "phytate_multiplier": 0.8,
+    "tea_coffee_multiplier": 0.6
+  },
+  "typical_bioavailability": {
+    "_source": "Hurrell & Egli 2010 midpoints: mixed diet ~0.15, vegetarian ~0.10",
+    "omnivore": 0.15, "vegetarian": 0.10
+  },
+  "exclude_in_pregnancy": {
+    "_source": "Liver is very high in preformed vitamin A; pregnancy guidance (e.g. UK NHS) advises avoiding liver. Verify locally.",
+    "foods": ["Chicken liver"]
+  },
+  "meal_slots": {
+    "Breakfast": ["grain|egg|legume", "fruit_c"],
+    "Lunch": ["grain", "legume|meat|fish", "greens", "fruit_c|veg_c"],
+    "Snack": ["nuts_seeds|dried_fruit", "fruit_c"],
+    "Dinner": ["grain", "legume|meat|fish", "greens|veg_c", "fruit_c|veg_c"]
+  }
+}

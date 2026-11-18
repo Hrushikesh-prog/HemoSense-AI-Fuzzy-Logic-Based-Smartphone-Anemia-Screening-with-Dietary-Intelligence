@@ -32,3 +32,52 @@ Thumbs.db
 # Environment / secrets
 .env
 api/.env
+# Research data derived from patient images (never commit)
+research/data/
+*.npz
+
+# Deployment artefacts
+deploy/.aws_state
+deploy/bundle.tgz
+deploy/user-data.sh
+*.pem
+deploy/.hemosense.env
+
+# Built APKs
+release/
+
+# Scratch work and patient-derived demo photos (never commit)
+research/tmp/
+
+# Local server logs
+*.log
+
+# Deployment bundles and rollback backups
+deploy/*.tgz
+
+# Third-party guideline PDFs used to build the RAG index (copyrighted; keep sources.json)
+research/rag_sources/*.pdf
+
+# Binary documents (not source)
+*.docx
+docs/*.pdf
+docs/infra_visualization_prompt.md
+
+# Per-patient research outputs (Hb/age/sex/IDs) and generated artefacts: never commit.
+# Only summaries and aggregate metrics are kept.
+research/results*/features.csv
+research/results*/live_sim_features*.csv
+research/results*/oof_*.csv
+research/results*/folds.csv
+research/results*/exclusions.json
+research/results*/*log.txt
+research/results*/figures/
+research/results_rag/outputs.jsonl
+research/results_rag/per_profile.csv
+
+# Generated RAG index (contains third-party text); rebuild with:
+#   python -m hemosense.rag build research/rag_sources models/rag_index.json
+models/rag_index.json
+
+# Local working notes (not project docs)
+docs/PROJECT_CONTEXT.md

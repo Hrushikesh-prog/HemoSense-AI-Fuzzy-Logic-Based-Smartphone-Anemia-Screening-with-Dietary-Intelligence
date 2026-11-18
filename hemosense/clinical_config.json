@@ -1,0 +1,10 @@
+{
+  "_source": "WHO 2011 haemoglobin cut-offs (g/dL). Verify against the WHO 2024 guideline before clinical use.",
+  "groups": {
+    "woman":      {"normal_min": 12.0, "mild_min": 11.0, "moderate_min": 8.0},
+    "man":        {"normal_min": 13.0, "mild_min": 11.0, "moderate_min": 8.0},
+    "pregnant":   {"normal_min": 11.0, "mild_min": 10.0, "moderate_min": 7.0},
+    "child_6_59m":{"normal_min": 11.0, "mild_min": 10.0, "moderate_min": 7.0}
+  },
+  "app_grades": ["Normal", "Mild", "Moderate-to-Severe"]
+}

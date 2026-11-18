@@ -1,5 +1,5 @@
 // Thin client for the HemoSense FastAPI server (see api/main.py).
-const BASE = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
+const BASE = (process.env.NEXT_PUBLIC_API_URL || '/api').replace(/\/$/, '')
 
 export const MIN_IMAGES = 2
 export const MAX_IMAGES = 10

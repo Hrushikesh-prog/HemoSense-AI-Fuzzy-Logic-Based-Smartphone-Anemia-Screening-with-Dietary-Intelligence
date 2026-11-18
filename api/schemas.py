@@ -3,7 +3,7 @@ schemas.py
 Pydantic request/response models for the HemoSense API.
 """
 
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field
 
@@ -38,6 +38,19 @@ class ScreeningFragment(BaseModel):
     anemic: Optional[bool] = None
 
 
+class DietProfile(BaseModel):
+    """Diet questionnaire answers (all optional)."""
+    budget_inr_per_day: Optional[float] = Field(default=None, ge=0, le=100000)
+    state: Optional[str] = None
+    city: Optional[str] = None
+    area_type: Optional[str] = Field(default=None, description="urban | rural | hostel")
+    kitchen: Optional[str] = Field(default=None, description="home | shared | none")
+    fridge: Optional[bool] = None
+    dislikes: Optional[List[str]] = None
+    skips_breakfast: Optional[bool] = None
+    night_shift: Optional[bool] = None
+
+
 class UserContext(BaseModel):
     age: Optional[int] = None
     sex: Optional[str] = Field(default=None, description="male | female")
@@ -46,6 +59,7 @@ class UserContext(BaseModel):
     region: Optional[str] = None
     allergies: Optional[List[str]] = None
     symptoms: Optional[List[str]] = Field(default=None, description="Self-reported symptom ids (GET /symptoms)")
+    diet_profile: Optional[DietProfile] = None
 
 
 class DietRecommendationRequest(BaseModel):
@@ -64,6 +78,8 @@ class DietRecommendationResponse(BaseModel):
     attempts: List[str]
     failures: List[Dict[str, str]] = Field(default_factory=list)
     disclaimer: str
+    sources: List[Dict[str, Any]] = Field(default_factory=list,
+                                          description="Guideline excerpts used (RAG); cited as [S1].. in the text")
 
 
 class LlmUsageRow(BaseModel):
@@ -74,3 +90,8 @@ class LlmUsageRow(BaseModel):
 class LlmUsage(BaseModel):
     today: List[LlmUsageRow]
     last_hour: int
+
+class DietPlanRequest(BaseModel):
+    user_context: Optional[UserContext] = None
+    severity_class: str = Field(default="Normal", description="Normal | Mild | Moderate | Severe")
+    anemic: Optional[bool] = None

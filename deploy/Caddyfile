@@ -1,0 +1,28 @@
+(common) {
+	encode gzip
+	request_body {
+		max_size 40MB
+	}
+	header {
+		X-Content-Type-Options nosniff
+		Referrer-Policy no-referrer
+		-Server
+	}
+	reverse_proxy api:8000 {
+		transport http {
+			read_timeout 120s
+		}
+	}
+}
+
+# Primary: HTTPS with an automatic Let's Encrypt certificate (HTTP redirects here).
+{$SITE_HOST} {
+	import common
+	header Strict-Transport-Security "max-age=31536000"
+}
+
+# Fallback: plain HTTP on the bare Elastic IP, in case a venue network blocks 443
+# or the certificate cannot be issued.
+http://{$PUBLIC_IP} {
+	import common
+}
