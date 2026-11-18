@@ -106,7 +106,7 @@ done
 HOST="$(echo "$IP" | tr . -).sslip.io"
 echo "== upload code to $IP"
 tar czf deploy/bundle.tgz Dockerfile .dockerignore hemosense api/*.py api/requirements-serve.txt \
-    models/anfis.json models/confidence.json models/rag_index.json deploy/docker-compose.yml deploy/Caddyfile
+    models/*.json deploy/docker-compose.yml deploy/Caddyfile
 scp "${SSH_OPTS[@]}" deploy/bundle.tgz ubuntu@"$IP":/home/ubuntu/bundle.tgz
 if [ -f api/.env ]; then
   grep -v '^HEMOSENSE_MODEL_PATH=' api/.env > deploy/.hemosense.env
@@ -121,7 +121,12 @@ echo "== build + start (api + caddy)"
 ssh "${SSH_OPTS[@]}" ubuntu@"$IP" "SITE_HOST=$HOST PUBLIC_IP=$IP bash -s" <<'REMOTE'
 set -e
 chmod 600 ~/hemosense.env
+# keep the server's RAG index when the bundle has none (it is not in git, so CI bundles lack it)
+if [ -f ~/hemosense/models/rag_index.json ]; then cp ~/hemosense/models/rag_index.json ~/rag_index.json.keep; fi
 rm -rf ~/hemosense && mkdir -p ~/hemosense && tar xzf ~/bundle.tgz -C ~/hemosense
+if [ ! -f ~/hemosense/models/rag_index.json ] && [ -f ~/rag_index.json.keep ]; then
+  cp ~/rag_index.json.keep ~/hemosense/models/rag_index.json
+fi
 cd ~/hemosense/deploy
 printf 'SITE_HOST=%s\nPUBLIC_IP=%s\n' "$SITE_HOST" "$PUBLIC_IP" > .env
 sudo docker compose up -d --build --remove-orphans

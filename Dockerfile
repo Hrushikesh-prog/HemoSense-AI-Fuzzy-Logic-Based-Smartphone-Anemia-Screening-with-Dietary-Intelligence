@@ -11,9 +11,8 @@ RUN pip install --no-cache-dir -r /srv/api/requirements-serve.txt
 
 COPY hemosense /srv/hemosense
 COPY api /srv/api
-COPY models/anfis.json /srv/models/anfis.json
-COPY models/confidence.json /srv/models/confidence.json
-COPY models/rag_index.json /srv/models/rag_index.json
+# anfis.json + confidence.json, and rag_index.json when present (optional; RAG is off without it)
+COPY models/*.json /srv/models/
 
 RUN useradd -m app && chown -R app /srv
 USER app

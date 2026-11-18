@@ -1,0 +1,117 @@
+# CD: runs when main changes (i.e. after a PR is merged), or manually.
+#   apk     - builds the Android release APK and attaches it to the run as a download
+#   deploy  - redeploys the API to the existing EC2 server with deploy/aws_deploy.sh.
+#             Skipped unless the repository variable DEPLOY_ENABLED is "true".
+#             Setup (secrets + variables): docs/CI_CD.md
+name: CD
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: cd-main
+  cancel-in-progress: false   # never interrupt a deploy half-way
+
+permissions:
+  contents: read
+
+jobs:
+  apk:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: 3.47.9
+          cache: true
+
+      - run: flutter pub get
+      - run: flutter test
+      - run: flutter build apk --release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: HemoSenseAI-apk-${{ github.sha }}
+          path: app/build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+
+  deploy:
+    name: Deploy API to EC2
+    if: vars.DEPLOY_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+    env:
+      AWS_REGION: ap-south-1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run backend tests before deploying
+        env:
+          HEMOSENSE_BEDROCK_MODELS: ""
+        run: |
+          pip install -q -r api/requirements-dev.txt
+          python -m pytest -q tests
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-south-1
+
+      - name: Prepare SSH key, server state and runtime env
+        env:
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+          HEMOSENSE_ENV: ${{ secrets.HEMOSENSE_ENV }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$EC2_SSH_KEY" > ~/.ssh/hemosense-key.pem
+          chmod 600 ~/.ssh/hemosense-key.pem
+          printf 'INSTANCE_ID=%s\nSG=%s\nALLOC=%s\nIP=%s\n' \
+            "${{ vars.EC2_INSTANCE_ID }}" "${{ vars.EC2_SG_ID }}" \
+            "${{ vars.EC2_ALLOC_ID }}" "${{ vars.EC2_IP }}" > deploy/.aws_state
+          printf '%s\n' "$HEMOSENSE_ENV" > api/.env
+
+      - name: Allow this runner through the SSH firewall
+        id: sg
+        run: |
+          RUNNER_IP=$(curl -s https://checkip.amazonaws.com | tr -d '\r\n')
+          echo "ip=$RUNNER_IP" >> "$GITHUB_OUTPUT"
+          aws ec2 authorize-security-group-ingress --group-id "${{ vars.EC2_SG_ID }}" \
+            --protocol tcp --port 22 --cidr "${RUNNER_IP}/32"
+
+      - name: Deploy
+        run: bash deploy/aws_deploy.sh
+
+      - name: Smoke test
+        run: |
+          HOST="$(echo '${{ vars.EC2_IP }}' | tr . -).sslip.io"
+          curl -fsS --max-time 30 "https://${HOST}/health" | head -c 300
+
+      - name: Remove the runner from the SSH firewall
+        if: always() && steps.sg.outputs.ip != ''
+        run: |
+          aws ec2 revoke-security-group-ingress --group-id "${{ vars.EC2_SG_ID }}" \
+            --protocol tcp --port 22 --cidr "${{ steps.sg.outputs.ip }}/32" || true
+
+      - name: Clean up secrets on the runner
+        if: always()
+        run: rm -f ~/.ssh/hemosense-key.pem api/.env deploy/.aws_state
