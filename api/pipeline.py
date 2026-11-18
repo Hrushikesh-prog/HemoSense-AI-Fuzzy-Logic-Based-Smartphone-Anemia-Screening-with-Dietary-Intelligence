@@ -1,16 +1,24 @@
 """
 pipeline.py
-Serving glue between the FastAPI layer and the trained HemoSense Phase 2/3 code.
+Serving glue between FastAPI and the shared HemoSense core (`hemosense/`).
 
-Reuses (does not re-implement) modules from ../scratch:
-  - anemia_pipeline: extract_conjunctiva_roi / apply_fuzzy_correction / calculate_erythema_index
-  - evaluate:        hb_to_severity  (bins identical to the training labels)
+Live path for one photo:
+  decode (EXIF orientation applied, same as the phone's display)
+  -> quality gate (too_dark / overexposed / blurry)
+  -> conjunctiva segmentation inside the user's box (GrabCut + colour refinement)
+  -> colour features (EI, a*, HHR, saturation) on the segmented pixels
+  -> ANFIS (anemia) + ANFIS (moderate-or-severe), Platt-calibrated
+  -> grade Normal / Mild / Moderate (shown as Moderate-to-Severe) + top fuzzy rules
 
-The heavy dependencies (tensorflow, opencv, scikit-fuzzy) are imported lazily so
-the app can still boot on machines that only have the web deps installed; any
-screen endpoint then fails fast with a clean 503 and a human-readable reason.
+Only numpy / OpenCV / Pillow are needed: no TensorFlow at serving time.
+The model is the single file models/anfis.json written by research/run_experiment.py.
+Images are processed in memory and never written to disk.
 """
 
+from __future__ import annotations
+
+import base64
+import io
 import json
 import os
 import time
@@ -18,16 +26,7 @@ from typing import Optional
 
 from api import config
 
-# ---------------------------------------------------------------------------
-# Availability state (populated once at startup by main lifespan)
-# ---------------------------------------------------------------------------
-_state = {
-    "model": None,
-    "loaded": False,
-    "reason": None,
-    "name": None,
-    "loaded_at": None,
-}
+_state = {"models": None, "loaded": False, "reason": None, "name": None, "loaded_at": None, "meta": None}
 
 
 class PipelineUnavailableError(Exception):
@@ -36,206 +35,174 @@ class PipelineUnavailableError(Exception):
         super().__init__(reason)
 
 
-def _why_missing(stage: str, exc: Exception) -> str:
-    return f"CNN unavailable: {stage} failed ({type(exc).__name__}: {exc}). " \
-           "Run the API in the project environment (Python 3.11/3.12, " \
-           "tensorflow<2.17, opencv-python, scikit-fuzzy)."
+class ImageQualityError(ValueError):
+    """Photo rejected by the quality gate or the segmenter. `code` matches the app."""
+
+    def __init__(self, code: str, message: str, quality: Optional[dict] = None):
+        self.code, self.message, self.quality = code, message, quality
+        super().__init__(message)
 
 
 def load_pipeline():
-    """Called once from the FastAPI lifespan. Loads the trained .keras model."""
-    _state["loaded"] = False
-    _state["reason"] = None
-    _state["name"] = None
-
+    """Called once from the FastAPI lifespan. Loads models/anfis.json."""
+    _state.update(loaded=False, reason=None, name=None)
     if not os.path.exists(config.MODEL_PATH):
-        _state["reason"] = (
-            f"Model file not found: {config.MODEL_PATH}. "
-            "Set HEMOSENSE_MODEL_PATH to a trained .keras file."
-        )
+        _state["reason"] = (f"Model file not found: {config.MODEL_PATH}. "
+                            "Run `python -m research.run_experiment` to create models/anfis.json.")
         return _state
-
     try:
-        import tensorflow as tf  # noqa: F401
+        import cv2  # noqa: F401
+        from hemosense.anfis import ANFIS
+        with open(config.MODEL_PATH, encoding="utf-8") as f:
+            meta = json.load(f)
+        _state["models"] = {k: ANFIS.from_dict(v) for k, v in meta["models"].items()}
     except Exception as exc:  # noqa: BLE001
-        _state["reason"] = _why_missing("importing tensorflow", exc)
+        _state["reason"] = f"Model unavailable: {type(exc).__name__}: {exc}"
         return _state
-
-    from evaluate import hb_to_severity  # noqa: F401  (validate scratch import chain)
-    import anemia_pipeline  # noqa: F401  (validates cv2 + skfuzzy)
-
-    try:
-        model = tf.keras.models.load_model(config.MODEL_PATH)
-        _ = model(tf.zeros((1, 224, 224, 3)))  # warm-up (builds the graph)
-    except Exception as exc:  # noqa: BLE001
-        _state["reason"] = _why_missing("loading the model", exc)
-        return _state
-
-    _state["model"] = model
-    _state["loaded"] = True
-    _state["name"] = os.path.splitext(os.path.basename(config.MODEL_PATH))[0]
-    _state["loaded_at"] = time.time()
+    conf_path = os.path.join(os.path.dirname(config.MODEL_PATH), "confidence.json")
+    _state["confidence"] = None
+    if os.path.exists(conf_path):
+        with open(conf_path, encoding="utf-8") as f:
+            _state["confidence"] = json.load(f)
+    _state.update(loaded=True, meta=meta, loaded_at=time.time(),
+                  name=f"anfis-sugeno0 v{meta.get('version', '?')}")
     return _state
 
 
 def get_state() -> dict:
-    return dict(_state)
+    return {k: v for k, v in _state.items() if k not in ("models", "confidence")}
 
 
-# ---------------------------------------------------------------------------
-# Metrics for /health (read from the saved run JSONs, no recomputation)
-# ---------------------------------------------------------------------------
+def confidence_table() -> Optional[dict]:
+    return _state.get("confidence")
+
+
 def load_metrics() -> dict:
-    if not os.path.exists(config.META_PATH):
-        return {"note": f"meta file not found: {config.META_PATH}"}
-    with open(config.META_PATH, encoding="utf-8") as f:
-        meta = json.load(f)
-    keep = {
-        "run_name": meta.get("run_name"),
-        "variant": meta.get("variant"),
-        "head": meta.get("head"),
-        "lr": meta.get("lr"),
-        "epochs_ran": meta.get("epochs_ran"),
-        "config": {
-            "dropout": meta.get("dropout"),
-            "dense_units": meta.get("dense_units"),
-            "aug_strength": meta.get("aug_strength"),
-        },
-        "test_metrics": meta.get("test_metrics"),
+    meta = _state.get("meta") or {}
+    return {
+        "model": "ANFIS (zero-order Sugeno, 3 inputs x 3 Gaussian terms)",
+        "trained_on": meta.get("trained_on"),
+        "n_train": meta.get("n_train"),
+        "created": meta.get("created"),
+        "cv_live_pipeline": meta.get("cv_live_pipeline"),
+        "features": {k: m.get("features") for k, m in (meta.get("models") or {}).items()},
     }
-    return keep
 
 
 # ---------------------------------------------------------------------------
-# Image decode
+# Image helpers
 # ---------------------------------------------------------------------------
-def _decode_rgb_and_bgr(img_bytes: bytes):
-    """Returns (rgb_np, bgr_np) from raw upload bytes. Raises on undecodable input."""
+def _decode_bgr(img_bytes: bytes):
+    """Decode with EXIF orientation applied, so the user's box (drawn on the displayed
+    photo) lines up with the pixels."""
+    import numpy as np
+    from PIL import Image, ImageOps
+
+    try:
+        im = Image.open(io.BytesIO(img_bytes))
+        im = ImageOps.exif_transpose(im).convert("RGB")
+    except Exception as exc:  # noqa: BLE001
+        raise ValueError(f"could not decode the image ({type(exc).__name__})") from exc
+    if min(im.size) < 64:
+        raise ValueError("image is too small")
+    rgb = np.asarray(im)
+    return np.ascontiguousarray(rgb[..., ::-1])
+
+
+def _png_b64(bgr) -> Optional[str]:
+    import cv2
+
+    ok, buf = cv2.imencode(".png", bgr)
+    return "data:image/png;base64," + base64.b64encode(buf.tobytes()).decode("ascii") if ok else None
+
+
+def _overlay_thumbnail(img, mask, box, max_side: int = 320) -> Optional[str]:
+    """Crop around the box, tint the segmented conjunctiva, for the 'Why?' screen."""
     import cv2
     import numpy as np
 
-    arr = np.frombuffer(img_bytes, dtype=np.uint8)
-    bgr = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-    if bgr is None or bgr.size == 0:
-        raise ValueError("Could not decode the uploaded image as a color image.")
-    rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-    return rgb, bgr
+    from hemosense.segment import clamp_box
 
-
-def _preprocess_like_training(rgb_np):
-    """Matches data_loader._decode_and_resize: resize 224x224, cast float32, /255.
-       The keras model's first layer then applies Rescaling(255.0) + EfficientNet
-       preprocess_input, exactly as during training."""
-    import tensorflow as tf
-
-    t = tf.convert_to_tensor(rgb_np, dtype=tf.uint8)
-    t = tf.image.resize(t, (224, 224))
-    t = tf.cast(t, tf.float32) / 255.0
-    return tf.expand_dims(t, axis=0)
+    H, W = img.shape[:2]
+    x, y, w, h = clamp_box(box)
+    x0, y0, x1, y1 = int(x * W), int(y * H), int((x + w) * W), int((y + h) * H)
+    ov = img.copy()
+    tint = np.array([60, 200, 60], np.float32)
+    ov[mask] = (ov[mask] * 0.55 + tint * 0.45).astype(np.uint8)
+    crop = ov[y0:y1, x0:x1]
+    s = min(1.0, max_side / max(crop.shape[:2]))
+    if s < 1:
+        crop = cv2.resize(crop, (max(1, int(crop.shape[1] * s)), max(1, int(crop.shape[0] * s))),
+                          interpolation=cv2.INTER_AREA)
+    return _png_b64(crop)
 
 
 # ---------------------------------------------------------------------------
-# Screening
+# Screening one photo
 # ---------------------------------------------------------------------------
-def _roi_thumbnail_b64(bgr_img, max_side: int = 192) -> Optional[str]:
-    """Small PNG data-URL of a BGR image, for UI crop verification."""
-    import base64
-    import cv2
-
-    h, w = bgr_img.shape[:2]
-    scale = min(1.0, max_side / max(h, w))
-    if scale < 1.0:
-        bgr_img = cv2.resize(bgr_img, (max(1, int(w * scale)), max(1, int(h * scale))),
-                             interpolation=cv2.INTER_AREA)
-    ok, buf = cv2.imencode(".png", bgr_img)
-    if not ok:
-        return None
-    return "data:image/png;base64," + base64.b64encode(buf.tobytes()).decode("ascii")
-
-
-def screen_image_bytes(img_bytes: bytes, include_roi: bool = False):
-    """Full inference path for POST /screen. Returns a response dict.
-    include_roi adds a small fuzzy-corrected ROI thumbnail (`roi_thumbnail`)."""
+def screen_image_bytes(img_bytes: bytes, include_roi: bool = False, box=None) -> dict:
     if not _state["loaded"]:
-        raise PipelineUnavailableError(_state["reason"] or "CNN not loaded.")
-
-    import numpy as np
-    from anemia_pipeline import (apply_fuzzy_correction, calculate_erythema_index,
-                                 extract_conjunctiva_roi)
-    from evaluate import hb_to_severity
+        raise PipelineUnavailableError(_state["reason"] or "model not loaded")
+    from hemosense.features import extract_features, to_float_rgb
+    from hemosense.segment import MESSAGES, clamp_box, segment_conjunctiva
 
     t0 = time.time()
-
-    rgb, bgr = _decode_rgb_and_bgr(img_bytes)
-
-    roi = extract_conjunctiva_roi(bgr)
-    roi_note = None
-
-    corrected = apply_fuzzy_correction(roi)
-
+    bgr = _decode_bgr(img_bytes)
+    seg = segment_conjunctiva(bgr, box)
+    if not seg.ok:
+        raise ImageQualityError(seg.code, seg.message, seg.quality)
     try:
-        ei_raw = float(calculate_erythema_index(roi))
-    except Exception:  # noqa: BLE001
-        ei_raw = None
-    try:
-        ei_corrected = float(calculate_erythema_index(corrected))
-    except Exception:  # noqa: BLE001
-        ei_corrected = None
+        f = extract_features(to_float_rgb(seg.image), seg.mask)
+    except ValueError:
+        raise ImageQualityError("no_conjunctiva", MESSAGES["no_conjunctiva"], seg.quality)
 
-    # Convert the (possibly BGR) ROI to RGB for the CNN — training fed RGB.
-    try:
-        import cv2
-        roi_rgb = cv2.cvtColor(roi, cv2.COLOR_BGR2RGB)
-    except Exception:  # noqa: BLE001
-        roi_rgb = roi
-
-    x = _preprocess_like_training(roi_rgb)
-    pred = np.asarray(_state["model"].predict(x, verbose=0), dtype=np.float64).reshape(-1)[0]
-    hb = float(round(pred, 2))
-
-    severity = str(hb_to_severity(np.asarray([pred]))[0])
-    anemic = bool(pred <= 12.0)  # consistent with evaluate.ANEMIA_THRESHOLD
+    m_a, m_s = _state["models"]["anemic"], _state["models"]["mod_sev"]
+    xa = [[f[k] for k in m_a.features]]
+    xs = [[f[k] for k in m_s.features]]
+    p_a = float(m_a.predict_proba(xa)[0])
+    p_s = float(m_s.predict_proba(xs)[0])
+    anemic = p_a >= m_a.tau
+    severity = "Normal" if not anemic else ("Moderate" if p_s >= m_s.tau else "Mild")
 
     result = {
-        "predicted_hb_gdl": hb,
+        "anemic": bool(anemic),
+        "p_anemic": round(p_a, 4),
+        "p_moderate_or_severe": round(p_s, 4),
+        "threshold": round(m_a.tau, 4),
+        "threshold_mod_sev": round(m_s.tau, 4),
         "severity_class": severity,
-        "anemic": anemic,
-        "erythema_index": {"raw": ei_raw, "corrected": ei_corrected},
-        "roi": {"detected": roi is not None and roi.size > 0, "note": roi_note},
+        "severity_label": "Moderate-to-Severe" if severity == "Moderate" else severity,
+        "predicted_hb_gdl": None,  # ANFIS screens; it does not estimate Hb (never shown)
+        "features": {k: round(float(f[k]), 4) for k in ("ei", "a", "hhr", "sat")},
+        "erythema_index": {"raw": round(float(f["ei"]), 3), "corrected": None},
+        "explanation": {
+            "inputs": m_a.features,
+            "memberships": m_a.memberships(xa[0]),
+            "top_rules": m_a.explain(xa[0], top=3),
+        },
+        "quality": {k: round(v, 3) for k, v in (seg.quality or {}).items()},
+        "roi": {"detected": True, "note": None, "box": list(clamp_box(box)),
+                "conjunctiva_pixels": int(seg.mask.sum())},
         "processing_ms": round((time.time() - t0) * 1000, 1),
         "model": _state["name"],
     }
     if include_roi:
-        try:
-            result["roi_thumbnail"] = _roi_thumbnail_b64(corrected)
-        except Exception:  # noqa: BLE001
-            result["roi_thumbnail"] = None
+        result["roi_thumbnail"] = _overlay_thumbnail(seg.image, seg.mask, box)
     return result
 
 
-# ---------------------------------------------------------------------------
-# ROI debug images (POST /screen/roi)
-# ---------------------------------------------------------------------------
-def roi_images_b64(img_bytes: bytes):
-    """Returns {roi_raw, roi_corrected} as base64 PNG data-URLs."""
-    import base64
+def roi_images_b64(img_bytes: bytes, box=None) -> dict:
+    """Debug helper for POST /screen/roi: the box crop and the segmentation overlay."""
+    from hemosense.segment import clamp_box, segment_conjunctiva
 
-    try:
-        import cv2
-        from anemia_pipeline import apply_fuzzy_correction, extract_conjunctiva_roi
-    except Exception as exc:  # noqa: BLE001
-        raise PipelineUnavailableError(
-            _why_missing("OpenCV / fuzzy pipeline (ROI path)", exc)
-        )
-
-    _, bgr = _decode_rgb_and_bgr(img_bytes)
-    roi = extract_conjunctiva_roi(bgr)
-    corrected = apply_fuzzy_correction(roi)
-
-    def _b64(bgr_img):
-        ok, buf = cv2.imencode(".png", bgr_img)
-        if not ok:
-            raise ValueError("Failed to encode ROI as PNG.")
-        return "data:image/png;base64," + base64.b64encode(buf.tobytes()).decode("ascii")
-
-    return {"roi_raw": _b64(roi), "roi_corrected": _b64(corrected)}
+    bgr = _decode_bgr(img_bytes)
+    seg = segment_conjunctiva(bgr, box, check_quality=False)
+    img = seg.image if seg.image is not None else bgr
+    H, W = img.shape[:2]
+    x, y, w, h = clamp_box(box)
+    crop = img[int(y * H):int((y + h) * H), int(x * W):int((x + w) * W)]
+    return {
+        "ok": seg.ok, "code": seg.code, "quality": seg.quality,
+        "roi_raw": _png_b64(crop),
+        "roi_segmented": _overlay_thumbnail(img, seg.mask, box) if seg.ok else None,
+    }

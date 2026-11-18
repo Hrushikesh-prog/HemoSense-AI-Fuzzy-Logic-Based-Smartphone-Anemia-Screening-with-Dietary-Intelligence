@@ -1,9 +1,9 @@
 """
 clinical.py
-Rule-based clinical layer on top of the CNN screening results.
+Rule-based clinical layer on top of the ANFIS screening results.
 
-  - aggregate_screenings(): combines 2-10 per-photo Hb estimates into one
-    screening verdict (median Hb, vote agreement, confidence).
+  - aggregate_screenings(): combines 1-10 per-photo ANFIS probabilities into one
+    screening verdict (median probability, vote agreement, confidence).
   - symptom_report():       symptoms typically associated with the detected
     severity, cross-checked against symptoms the patient reported.
   - baseline_diet_plan():   deterministic dietary plan used by the UI whenever
@@ -15,82 +15,90 @@ Everything here is screening guidance only, never a diagnosis.
 import statistics
 from typing import Dict, List, Optional
 
-# Keep in sync with scratch/evaluate.py (ANEMIA_THRESHOLD, hb_to_severity bins)
-ANEMIA_THRESHOLD = 12.0
-MIN_IMAGES = 2
+MIN_IMAGES = 1
 MAX_IMAGES = 10
 
 # Majority share of per-photo votes required before the verdict is called.
 DECISION_AGREEMENT = 0.7
 
 SEVERITY_ORDER = ["Normal", "Mild", "Moderate", "Severe"]
-
-
-def severity_for_hb(hb: float) -> str:
-    """Same bins as evaluate.hb_to_severity (right-inclusive: (0,7], (7,10], (10,12], (12,30])."""
-    if hb <= 7.0:
-        return "Severe"
-    if hb <= 10.0:
-        return "Moderate"
-    if hb <= 12.0:
-        return "Mild"
-    return "Normal"
+DISPLAY = {"Normal": "Normal", "Mild": "Mild", "Moderate": "Moderate-to-Severe",
+           "Severe": "Moderate-to-Severe"}
 
 
 # ---------------------------------------------------------------------------
-# Aggregation of multiple photos
+# Aggregation of one or more photos (ANFIS probabilities)
 # ---------------------------------------------------------------------------
-def aggregate_screenings(results: List[dict]) -> dict:
-    """results: successful per-image screening dicts (predicted_hb_gdl, anemic, ...)."""
-    hbs = [r["predicted_hb_gdl"] for r in results]
-    n = len(hbs)
-    median_hb = round(statistics.median(hbs), 2)
-    std_hb = round(statistics.pstdev(hbs), 2) if n > 1 else 0.0
+def confidence_from_evidence(p: float, table: Optional[dict]) -> dict:
+    """Confidence = accuracy the model actually achieved, in patient-level cross-validation,
+    for patients whose result was equally clear (models/confidence.json)."""
+    certainty = max(p, 1.0 - p)
+    detail = {"certainty": round(certainty, 4), "cv_accuracy": None, "cv_n": 0,
+              "basis": "No validation table loaded; confidence reflects certainty only."}
+    label = "Low"
+    for b in (table or {}).get("bins", []):
+        if b["certainty_from"] <= certainty < b["certainty_to"] + 1e-9 and b["n"]:
+            label = b["label"]
+            detail.update(cv_accuracy=round(b["accuracy"], 4), cv_n=b["n"],
+                          basis=(f"In patient-level cross-validation, {b['correct']} of {b['n']} patients "
+                                 f"with a result this clear (certainty {b['certainty_from']:.1f}-"
+                                 f"{min(b['certainty_to'], 1.0):.1f}) were classified correctly."))
+            break
+    return {"label": label, "detail": detail}
 
+
+def aggregate_screenings(results: List[dict], confidence_table: Optional[dict] = None) -> dict:
+    """results: successful per-image dicts from pipeline.screen_image_bytes.
+
+    The verdict uses the median calibrated probability across photos against the
+    model's threshold; agreement = share of photos that vote the same way."""
+    n = len(results)
+    p_a = statistics.median(r["p_anemic"] for r in results)
+    p_s = statistics.median(r["p_moderate_or_severe"] for r in results)
+    tau = results[0]["threshold"]
+    anemic = p_a >= tau
+    tau_s = results[0]["threshold_mod_sev"]
+    severity = "Normal" if not anemic else ("Moderate" if p_s >= tau_s else "Mild")
     anemic_votes = sum(1 for r in results if r["anemic"])
-    majority = max(anemic_votes, n - anemic_votes)
-    agreement = round(majority / n, 3)
+    agreement = round(max(anemic_votes, n - anemic_votes) / n, 3)
+    margin = abs(p_a - tau)
 
-    severity = severity_for_hb(median_hb)
-    anemic = median_hb <= ANEMIA_THRESHOLD
-
-    if agreement >= 0.8 and std_hb <= 1.0:
-        confidence = "High"
-    elif agreement >= DECISION_AGREEMENT and std_hb <= 1.8:
-        confidence = "Medium"
-    else:
+    conf = confidence_from_evidence(p_a, confidence_table)
+    confidence, confidence_detail = conf["label"], conf["detail"]
+    if n > 1 and agreement < DECISION_AGREEMENT:   # photos disagree: never claim more than Low
         confidence = "Low"
+        confidence_detail["basis"] += f" The photos disagree ({anemic_votes} of {n} suggest anemia)."
 
-    if agreement < DECISION_AGREEMENT:
+    label = DISPLAY[severity]
+    if n > 1 and agreement < DECISION_AGREEMENT:
         status = "inconclusive"
         headline = "Inconclusive - photos disagree"
-        summary = (f"{anemic_votes} of {n} photos suggest anemia. Retake photos in even, "
-                   "natural light with the lower eyelid gently pulled down, or get a blood test.")
+        summary = (f"{anemic_votes} of {n} photos suggest anemia. Retake the photos in bright, even "
+                   "light with the lower eyelid gently pulled down, or get a blood test.")
     elif anemic:
         status = "anemic"
-        headline = f"Anemia likely ({severity})"
-        summary = (f"Estimated hemoglobin {median_hb} g/dL is at or below the "
-                   f"{ANEMIA_THRESHOLD:g} g/dL screening threshold; "
-                   f"{anemic_votes} of {n} photos agree.")
+        headline = f"Possible anemia ({label})"
+        summary = ("The colour of the inner eyelid is in the range the model associates with "
+                   f"anemia (risk score {p_a:.0%}). A blood test (CBC) is needed to confirm.")
     else:
         status = "normal"
-        headline = "No anemia detected"
-        summary = (f"Estimated hemoglobin {median_hb} g/dL is above the "
-                   f"{ANEMIA_THRESHOLD:g} g/dL screening threshold; "
-                   f"{n - anemic_votes} of {n} photos agree.")
+        headline = "No sign of anemia"
+        summary = ("The colour of the inner eyelid is in the range the model associates with "
+                   f"normal haemoglobin (risk score {p_a:.0%}).")
 
     return {
-        "predicted_hb_gdl": median_hb,
-        "mean_hb_gdl": round(statistics.fmean(hbs), 2),
-        "std_hb_gdl": std_hb,
-        "min_hb_gdl": round(min(hbs), 2),
-        "max_hb_gdl": round(max(hbs), 2),
+        "predicted_hb_gdl": None,  # never estimated or shown
+        "p_anemic": round(p_a, 4),
+        "p_moderate_or_severe": round(p_s, 4),
+        "threshold": tau,
         "severity_class": severity,
-        "anemic": anemic,
+        "severity_label": label,
+        "anemic": bool(anemic),
         "anemic_votes": anemic_votes,
         "n_used": n,
         "agreement": agreement,
         "confidence": confidence,
+        "confidence_detail": confidence_detail,
         "verdict": {"status": status, "headline": headline, "summary": summary},
     }
 
@@ -175,63 +183,6 @@ def symptom_report(severity: str, reported: Optional[List[str]]) -> dict:
 # ---------------------------------------------------------------------------
 # Baseline diet plan (deterministic, no LLM)
 # ---------------------------------------------------------------------------
-_IRON_FOODS = {
-    "omnivore": [
-        "Lean red meat, liver (once a week), chicken and fish - heme iron is absorbed best",
-        "Eggs, especially with a vitamin C side",
-        "Lentils, chickpeas, kidney beans and rajma",
-        "Spinach, amaranth, moringa and other dark leafy greens",
-        "Dates, raisins, figs and jaggery in small portions",
-    ],
-    "vegetarian": [
-        "Lentils (dal), chickpeas, kidney beans, soybeans and tofu",
-        "Spinach, amaranth, moringa (drumstick) leaves and fenugreek",
-        "Iron-fortified cereals, ragi, bajra and poha",
-        "Pumpkin, sesame and flax seeds; peanuts and cashews",
-        "Dates, raisins, figs and jaggery; eggs if you eat them",
-    ],
-    "vegan": [
-        "Lentils, chickpeas, kidney beans, soybeans, tofu and tempeh",
-        "Spinach, amaranth, moringa leaves, kale and fenugreek",
-        "Iron-fortified cereals, ragi, bajra, quinoa and poha",
-        "Pumpkin, sesame (tahini) and flax seeds; cashews",
-        "Dates, raisins, dried apricots, figs and blackstrap molasses",
-    ],
-}
-
-_VITAMIN_C = [
-    "Citrus fruits (orange, sweet lime), amla (Indian gooseberry), guava",
-    "Tomatoes, bell peppers, lemon juice squeezed over dal or greens",
-    "Strawberries, kiwi, papaya, broccoli",
-]
-
-_AVOID = [
-    "Tea and coffee within 1 hour before or after iron-rich meals (tannins block absorption)",
-    "Calcium supplements or large amounts of milk together with iron-rich meals",
-    "Heavily processed foods and excess sugar that replace nutrient-dense meals",
-]
-
-_MEALS = {
-    "omnivore": {
-        "Breakfast": "Vegetable omelette + whole-wheat toast + a glass of orange juice",
-        "Lunch": "Grilled chicken or fish, spinach dal, brown rice, tomato-cucumber salad with lemon",
-        "Snack": "Handful of dates and pumpkin seeds + a guava",
-        "Dinner": "Lean mutton or egg curry, rajma, roti and a bell-pepper stir-fry",
-    },
-    "vegetarian": {
-        "Breakfast": "Ragi or fortified-cereal porridge with raisins + a glass of amla or orange juice",
-        "Lunch": "Palak dal, brown rice or bajra roti, beetroot-tomato salad with lemon",
-        "Snack": "Roasted chana + jaggery piece + a guava or orange",
-        "Dinner": "Paneer or tofu with spinach, rajma or chole, roti, lemon on the side",
-    },
-    "vegan": {
-        "Breakfast": "Poha with peanuts and lemon + fortified plant milk + a kiwi or orange",
-        "Lunch": "Chickpea-spinach curry, quinoa or brown rice, tomato-pepper salad with lemon",
-        "Snack": "Dates, dried apricots and pumpkin seeds + a guava",
-        "Dinner": "Tofu and kale stir-fry with sesame, lentil soup, whole-grain roti",
-    },
-}
-
 _CLINICIAN = {
     "Normal": "Routine check-up once a year, or sooner if you develop symptoms.",
     "Mild": "Book a blood test (CBC + ferritin) within 2-4 weeks to confirm and find the cause.",
@@ -249,44 +200,29 @@ _GOALS = {
 }
 
 
-def _normalise_diet(diet: Optional[str]) -> str:
-    d = (diet or "").strip().lower()
-    if d in ("vegan", "plant-based", "plant based"):
-        return "vegan"
-    if d in ("vegetarian", "veg", "eggetarian", "lacto-vegetarian", "jain"):
-        return "vegetarian"
-    return "omnivore"
-
-
 def baseline_diet_plan(severity: str, user_context: Optional[Dict] = None) -> dict:
+    """Personalised plan from real food-composition data (hemosense.diet, USDA FoodData Central)
+    plus clinical guidance text for the grade."""
+    from hemosense.diet import build_plan
+
     ctx = user_context or {}
-    diet = _normalise_diet(ctx.get("diet"))
-    allergies = [a.strip().lower() for a in (ctx.get("allergies") or []) if a and a.strip()]
-
-    def _safe(items):
-        if not allergies:
-            return list(items)
-        return [i for i in items if not any(a in i.lower() for a in allergies)]
-
+    plan = build_plan(ctx, severity)
     extras = []
     if ctx.get("pregnant"):
-        extras.append("Pregnancy raises iron needs to ~27 mg/day - take prescribed iron and "
-                      "folic acid supplements and attend antenatal blood tests.")
-    if (ctx.get("sex") or "").lower() == "female" and not ctx.get("pregnant"):
-        extras.append("Menstruation increases iron losses - keep iron-rich foods in every day's meals.")
-    if diet == "vegan":
-        extras.append("Include a vitamin B12 source (fortified foods or a supplement) - "
+        extras.append(f"Pregnancy raises the iron target to {plan['daily']['target_iron_mg']:g} mg/day: "
+                      "take the iron and folic acid your doctor prescribes and attend antenatal blood tests.")
+    if plan["diet_type"] == "vegan":
+        extras.append("Include a vitamin B12 source (fortified foods or a supplement): "
                       "B12 deficiency also causes anemia.")
     if severity in ("Moderate", "Severe"):
-        extras.append("Ask your doctor about iron, folate and B12 supplements; do not self-dose high-iron tablets.")
-
+        extras.append("Food alone is not enough to treat moderate or severe anemia. Ask your doctor about "
+                      "iron, folate and B12; do not self-dose high-iron tablets.")
+    d = plan["daily"]
+    extras.append(f"This plan gives about {d['iron_mg']:g} mg iron (target {d['target_iron_mg']:g} mg, "
+                  f"{d['target_basis']}) of which about {d['absorbable_iron_mg']:g} mg is absorbable.")
     return {
         "goal": _GOALS.get(severity, _GOALS["Normal"]),
-        "diet_type": diet,
-        "iron_rich_foods": _safe(_IRON_FOODS[diet]),
-        "pair_with_vitamin_c": _safe(_VITAMIN_C),
-        "avoid_or_limit": _AVOID,
-        "sample_day": {k: v for k, v in _MEALS[diet].items() if v in _safe([v])},
+        **plan,
         "extra_tips": extras,
         "when_to_see_clinician": _CLINICIAN.get(severity, _CLINICIAN["Normal"]),
         "recovery_outlook": (

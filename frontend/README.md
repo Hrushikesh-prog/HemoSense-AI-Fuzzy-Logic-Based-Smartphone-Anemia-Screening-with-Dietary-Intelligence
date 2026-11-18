@@ -1,6 +1,6 @@
-# HemoSense UI (React)
+# HemoSense UI (Next.js)
 
-A standalone React + Vite frontend for the HemoSense API (`../api`).
+A standalone Next.js (App Router) + React frontend for the HemoSense API (`../api`).
 
 **Flow:** upload 2–10 lower-eyelid photos, optionally add patient details and symptoms,
 then click **Analyse**. The UI shows:
@@ -22,25 +22,29 @@ uvicorn api.main:app --host 127.0.0.1 --port 8000
 # 2. UI
 cd frontend
 npm install
-npm run dev          # http://localhost:5180
+npm run dev          # http://localhost:3000
 ```
 
-In dev the Vite server proxies `/api/*` to `http://127.0.0.1:8000`, so CORS is not
-involved. To point at another backend, set `HEMOSENSE_API_TARGET` (dev proxy) or
-`VITE_API_URL` (skips the proxy, e.g. for `npm run build` deployments).
+In dev the Next.js server rewrites `/api/*` to `http://127.0.0.1:8000`, so CORS is
+not involved. To point at another backend, set `HEMOSENSE_API_TARGET` (rewrite
+target) or `NEXT_PUBLIC_API_URL` (skips the rewrite, e.g. for `npm run build`
+deployments).
 
 ## Structure
 
 ```
 src/
-  api.js                     fetch client (/health, /symptoms, /screen/batch, /diet/recommendations)
-  App.jsx                    page state: inputs -> results
+  app/
+    layout.jsx                 metadata, fonts, global styles
+    page.jsx                   renders the screening page
+  api.js                       fetch client (/health, /symptoms, /screen/batch, /diet/recommendations)
+  App.jsx                      page state: inputs -> results ('use client')
   components/
-    Header.jsx               model / LLM status badges
-    PhotoUploader.jsx        drag-drop, file picker, camera capture, 2-10 validation
-    PatientForm.jsx          age, sex, pregnancy, diet, region, allergies, symptom chips
-    Results.jsx              verdict, urgent alert, per-photo grid, print
-    HbGauge.jsx              Hb scale with the model's severity bands
-    SymptomsPanel.jsx        expected vs reported symptoms
-    DietPanel.jsx            rule-based plan + AI markdown plan
+    Header.jsx                 model / LLM status badges
+    PhotoUploader.jsx          drag-drop, file picker, camera capture, 2-10 validation
+    PatientForm.jsx            age, sex, pregnancy, diet, region, allergies, symptom chips
+    Results.jsx                verdict, urgent alert, per-photo grid, print
+    HbGauge.jsx                Hb scale with the model's severity bands
+    SymptomsPanel.jsx          expected vs reported symptoms
+    DietPanel.jsx              rule-based plan + AI markdown plan
 ```

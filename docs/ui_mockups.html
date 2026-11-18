@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>HemoSense AI – UI Mockups</title>
+<style>
+@page { size: A4 landscape; margin: 0; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root{
+  --p:#B4264A; --pd:#7A1734; --pl:#FCE4EA; --bg:#FFF8F9; --ol:#E8D9DE; --tx:#1F1A1C; --mu:#6F6267;
+  --ok:#2E7D32; --okb:#E3F3E4; --mi:#C98F00; --mib:#FFF3D1; --mo:#E0620B; --mob:#FFE7D4; --se:#C62828; --seb:#FBDEDE;
+}
+body{font-family:"Segoe UI",Roboto,Arial,sans-serif;color:var(--tx);-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+.page{width:297mm;height:210mm;padding:7mm 11mm;display:flex;flex-direction:column;page-break-after:always;overflow:hidden;background:#FBF6F7;position:relative}
+.page:last-child{page-break-after:auto}
+.ph{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid #E7D9DD;padding-bottom:5px;margin-bottom:10px}
+.ph h2{font-size:17px;color:var(--pd);font-weight:700}
+.ph span{font-size:10px;color:#8a7d82}
+.row{display:flex;justify-content:space-around;flex:1}
+.col{width:300px;display:flex;flex-direction:column;align-items:center}
+.phone{width:276px;height:568px;background:#141214;border-radius:36px;padding:8px;box-shadow:0 6px 18px rgba(80,20,40,.18);flex:none}
+.screen{width:100%;height:100%;border-radius:29px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column;position:relative;font-size:10.5px;line-height:1.35}
+.sb{height:24px;flex:none;display:flex;justify-content:space-between;align-items:center;padding:2px 18px 0;font-size:9.5px;font-weight:600}
+.sb .r{display:flex;gap:4px;align-items:center}
+.sig{display:flex;gap:1.5px;align-items:flex-end;height:8px}.sig i{width:2.5px;background:currentColor;border-radius:1px}
+.bat{width:15px;height:8px;border:1.3px solid currentColor;border-radius:2px;padding:1px}.bat i{display:block;height:100%;width:75%;background:currentColor}
+.hi{height:16px;flex:none;display:flex;justify-content:center;align-items:center}
+.hi::after{content:"";width:86px;height:3.5px;border-radius:2px;background:#2a2a2a}
+.dark .hi::after{background:#ddd}
+.notes{margin-top:9px;width:292px}
+.notes h3{font-size:11.5px;color:var(--pd);margin-bottom:3px}
+.notes li{font-size:9.3px;line-height:1.38;color:#4a4246;margin-left:13px}
+
+.appbar{display:flex;align-items:center;gap:8px;padding:6px 12px 8px;font-size:13px;font-weight:600;flex:none}
+.appbar .sp{flex:1}
+.ct{flex:1;padding:2px 12px 10px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.card{background:#fff;border:1px solid var(--ol);border-radius:14px;padding:9px 10px}
+.btn{height:34px;border-radius:17px;background:var(--p);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:600;font-size:11px;gap:6px;flex:none}
+.btn.o{background:transparent;border:1.3px solid var(--p);color:var(--p)}
+.btn.t{background:transparent;color:var(--p)}
+.btn.w{background:#fff;color:var(--pd)}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:12px;border:1px solid #D8C8CE;font-size:9.5px;background:#fff}
+.chip.on{background:var(--pl);border-color:var(--p);color:var(--pd);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.field{border:1px solid #CBBEC3;border-radius:9px;padding:4px 10px 5px;background:#fff}
+.field label{font-size:8.5px;color:var(--mu);display:block}
+.field div{font-size:11px}
+.lbl{font-size:9.5px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.4px}
+.bn{height:52px;flex:none;border-top:1px solid var(--ol);display:flex;justify-content:space-around;align-items:center;background:#fff}
+.bn a{display:flex;flex-direction:column;align-items:center;font-size:8.5px;color:var(--mu);gap:2px;width:48px}
+.bn a span.ib{display:flex;justify-content:center;width:44px;height:22px;align-items:center;border-radius:11px}
+.bn a.on{color:var(--pd);font-weight:600}.bn a.on span.ib{background:var(--pl)}
+.ic{width:16px;height:16px;flex:none}
+.ic.s{width:13px;height:13px}.ic.l{width:22px;height:22px}
+.h1{font-size:17px;font-weight:700;line-height:1.2}
+.h2{font-size:12.5px;font-weight:700}
+.mu{color:var(--mu)} .sm{font-size:9px} .b{font-weight:700}
+.pill{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:10px;font-size:9px;font-weight:700}
+.p-ok{background:var(--okb);color:var(--ok)} .p-mi{background:var(--mib);color:#8A6200} .p-mo{background:var(--mob);color:#A64300} .p-se{background:var(--seb);color:var(--se)}
+.bar{height:6px;border-radius:3px;background:#EFE6E9;overflow:hidden;flex:1}.bar i{display:block;height:100%;border-radius:3px}
+.flex{display:flex;align-items:center;gap:8px}.between{justify-content:space-between}
+.li{display:flex;align-items:center;gap:9px;padding:6px 0;border-bottom:1px solid #F1E7EA}
+.li:last-child{border-bottom:0}
+.av{width:28px;height:28px;border-radius:9px;background:var(--pl);color:var(--pd);display:flex;align-items:center;justify-content:center;flex:none}
+.tog{width:28px;height:16px;border-radius:8px;background:var(--p);position:relative;flex:none}
+.tog::after{content:"";position:absolute;right:2px;top:2px;width:12px;height:12px;border-radius:50%;background:#fff}
+.tog.off{background:#CFC3C7}.tog.off::after{left:2px;right:auto}
+.img{border-radius:14px;overflow:hidden;position:relative}
+.img svg{display:block;width:100%;height:auto}
+.dot{width:6px;height:6px;border-radius:3px;background:#DCCBD1}.dot.on{width:16px;background:var(--p)}
+</style>
+</head>
+<body>
+
+<!-- ================= ICON + ILLUSTRATION SYMBOLS ================= -->
+<svg width="0" height="0" style="position:absolute">
+ <defs>
+  <radialGradient id="skin" cx="50%" cy="45%" r="70%"><stop offset="0" stop-color="#E7B596"/><stop offset="1" stop-color="#B9805F"/></radialGradient>
+  <clipPath id="eyeclip"><path d="M18 52 Q100 -8 182 52 Q100 76 18 52Z"/></clipPath>
+  <linearGradient id="hero" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C2304F"/><stop offset="1" stop-color="#7A1734"/></linearGradient>
+  <filter id="blur"><feGaussianBlur stdDeviation="3.5"/></filter>
+ </defs>
+ <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+ <symbol id="i-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8h4l2-3h6l2 3h4v12H3z"/><circle cx="12" cy="13" r="3.5"/></symbol>
+ <symbol id="i-history" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v4h4"/><path d="M12 7v5l3 2"/></symbol>
+ <symbol id="i-food" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7.5c-3-2-8-1-8 4.5s4 9 6 9c1 0 1.5-.5 2-.5s1 .5 2 .5c2 0 6-3 6-9s-5-6.5-8-4.5z"/><path d="M12 7.5c0-2 1-4 3-4.5"/></symbol>
+ <symbol id="i-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></symbol>
+ <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+ <symbol id="i-check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></symbol>
+ <symbol id="i-alert" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 10v5"/><path d="M12 18v.3"/></symbol>
+ <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></symbol>
+ <symbol id="i-back" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12H5"/><path d="M11 6l-6 6 6 6"/></symbol>
+ <symbol id="i-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+ <symbol id="i-bolt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></symbol>
+ <symbol id="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+ <symbol id="i-share" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></symbol>
+ <symbol id="i-clinic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V8l8-5 8 5v13z"/><path d="M12 10v6M9 13h6"/></symbol>
+ <symbol id="i-drop" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3s6.5 7 6.5 11.5a6.5 6.5 0 0 1-13 0C5.5 10 12 3 12 3z"/></symbol>
+ <symbol id="i-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.3"/></symbol>
+ <symbol id="i-refresh" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></symbol>
+ <symbol id="i-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21h4"/></symbol>
+ <symbol id="i-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+ <symbol id="i-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></symbol>
+ <symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4M9 13h6M9 17h6"/></symbol>
+ <symbol id="i-leaf" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19c0-9 6-14 15-14 0 9-5 15-14 15"/><path d="M5 19l8-8"/></symbol>
+ <symbol id="i-cup" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h2a2 2 0 0 1 0 4h-2"/></symbol>
+ <symbol id="i-gear" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></symbol>
+ <symbol id="i-server" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></symbol>
+ <symbol id="i-image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="M21 16l-5-5-9 9"/></symbol>
+ <symbol id="i-flip" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12a8 8 0 0 1 14-5.3L20 9"/><path d="M20 4v5h-5"/><path d="M20 12a8 8 0 0 1-14 5.3L4 15"/><path d="M4 20v-5h5"/></symbol>
+ <symbol id="i-up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17l6-6 4 4 6-7"/><path d="M15 8h5v5"/></symbol>
+ <symbol id="i-google" viewBox="0 0 24 24"><path d="M21.6 12.2c0-.7-.1-1.3-.2-1.9H12v3.6h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.2z" fill="#4285F4"/><path d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22z" fill="#34A853"/><path d="M6.4 14a6 6 0 0 1 0-3.9V7.5H3.1a10 10 0 0 0 0 9z" fill="#FBBC05"/><path d="M12 6c1.5 0 2.8.5 3.8 1.5l2.8-2.8A10 10 0 0 0 3.1 7.5L6.4 10C7.2 7.7 9.4 6 12 6z" fill="#EA4335"/></symbol>
+
+ <!-- Eye with lower eyelid pulled down (healthy pink conjunctiva) -->
+ <symbol id="eye" viewBox="0 0 200 120">
+  <rect width="200" height="120" fill="url(#skin)"/>
+  <path d="M10 40 Q100 -20 190 40" stroke="#6B4632" stroke-width="5" fill="none" opacity=".55"/>
+  <path d="M18 52 Q100 -8 182 52 Q100 76 18 52Z" fill="#F6F1EC"/>
+  <g clip-path="url(#eyeclip)"><circle cx="100" cy="42" r="22" fill="#5A3A22"/><circle cx="100" cy="42" r="15" fill="#3E2716"/><circle cx="100" cy="42" r="9" fill="#0d0d0d"/><circle cx="107" cy="35" r="3.5" fill="#fff" opacity=".9"/></g>
+  <path d="M18 52 Q100 -8 182 52" stroke="#4A2E22" stroke-width="3" fill="none"/>
+  <path d="M22 56 Q100 80 178 56 Q100 114 22 56Z" fill="#D45B68"/>
+  <path d="M42 63 Q100 82 158 63 Q100 100 42 63Z" fill="#E7868D" opacity=".75"/>
+  <path d="M55 70 q12 6 22 4 M120 76 q14 -2 24 -8 M88 82 q6 8 16 6 M66 78 q8 4 10 10" stroke="#A8303F" stroke-width=".9" fill="none"/>
+  <path d="M22 56 Q100 114 178 56" stroke="#A86C55" stroke-width="3" fill="none"/>
+  <path d="M55 120 Q66 98 100 101 Q134 98 145 120Z" fill="#C88A6E"/>
+  <path d="M86 104 q14 -4 28 0" stroke="#E9C2AD" stroke-width="2" fill="none" opacity=".7"/>
+ </symbol>
+ <!-- Pale (anemic-looking) version used on the cover -->
+ <symbol id="eyepale" viewBox="0 0 200 120">
+  <rect width="200" height="120" fill="url(#skin)"/>
+  <path d="M18 52 Q100 -8 182 52 Q100 76 18 52Z" fill="#F6F1EC"/>
+  <g clip-path="url(#eyeclip)"><circle cx="100" cy="42" r="22" fill="#5A3A22"/><circle cx="100" cy="42" r="9" fill="#0d0d0d"/><circle cx="107" cy="35" r="3.5" fill="#fff"/></g>
+  <path d="M18 52 Q100 -8 182 52" stroke="#4A2E22" stroke-width="3" fill="none"/>
+  <path d="M22 56 Q100 80 178 56 Q100 114 22 56Z" fill="#EDBAB5"/>
+  <path d="M22 56 Q100 114 178 56" stroke="#A86C55" stroke-width="3" fill="none"/>
+  <path d="M55 120 Q66 98 100 101 Q134 98 145 120Z" fill="#C88A6E"/>
+ </symbol>
+</svg>
+
+<!-- ================= PAGE 1 : COVER ================= -->
+<section class="page" style="background:linear-gradient(135deg,#8E1C3C 0%,#5C0F26 100%);color:#fff;padding:16mm 18mm">
+ <div style="display:flex;gap:40px;flex:1;align-items:center">
+  <div style="flex:1.25">
+   <div class="flex" style="gap:12px;margin-bottom:18px">
+    <div style="width:46px;height:46px;border-radius:14px;background:#fff;color:var(--p);display:flex;align-items:center;justify-content:center"><svg class="ic" style="width:28px;height:28px"><use href="#i-drop"/></svg></div>
+    <div style="font-size:14px;letter-spacing:2px;opacity:.85">CAPSTONE PROJECT · UI DESIGN REVIEW</div>
+   </div>
+   <div style="font-size:44px;font-weight:800;line-height:1.05">HemoSense AI</div>
+   <div style="font-size:18px;margin-top:10px;opacity:.92;max-width:520px;line-height:1.35">Smartphone anemia screening from an eye (conjunctiva) photo, using fuzzy logic, with personalised diet plans</div>
+   <div style="margin-top:26px;font-size:12px;opacity:.85;line-height:1.7">
+    <b>Platform:</b> Flutter (Android) &nbsp;·&nbsp; <b>Backend:</b> Python (FastAPI / Flask) + OpenCV + scikit-fuzzy<br>
+    <b>Input:</b> photo of the lower inner eyelid + basic profile (age, sex, diet)<br>
+    <b>Output:</b> anemia risk level, estimated Hb range, explanation, diet &amp; meal plan
+   </div>
+   <div style="margin-top:28px;display:grid;grid-template-columns:1fr 1fr;gap:4px 30px;font-size:11.5px;max-width:520px">
+    <div>1 · Cover</div><div>5 · Capture &amp; analysis</div>
+    <div>2 · User flow, architecture &amp; design system</div><div>6 · Results, explanation &amp; diet</div>
+    <div>3 · Splash, onboarding &amp; login</div><div>7 · Meal plan, history &amp; report</div>
+    <div>4 · Profile setup, home &amp; capture guide</div><div>8 · Error state, settings &amp; open questions</div>
+   </div>
+   <div style="margin-top:34px;font-size:10.5px;opacity:.7">Draft v0.1 · 13 November 2026 · Mockups for discussion. Content, values and food data are placeholders.</div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:16px;align-items:center">
+   <div style="width:360px;border-radius:22px;overflow:hidden;box-shadow:0 12px 30px rgba(0,0,0,.35);border:4px solid rgba(255,255,255,.15)"><svg viewBox="0 0 200 120" style="display:block;width:100%"><use href="#eye"/></svg></div>
+   <div style="display:flex;gap:14px;width:360px">
+    <div style="flex:1;background:rgba(255,255,255,.1);border-radius:14px;padding:10px 12px;font-size:10.5px"><div style="font-weight:700;font-size:12px">Healthy</div>Deep pink-red inner eyelid</div>
+    <div style="flex:1;background:rgba(255,255,255,.1);border-radius:14px;padding:10px 12px;font-size:10.5px"><svg viewBox="0 0 200 120" style="width:100%;border-radius:8px;display:block;margin-bottom:5px"><use href="#eyepale"/></svg><div style="font-weight:700;font-size:12px">Possible anemia</div>Pale inner eyelid (pallor)</div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= PAGE 2 : FLOW + DESIGN SYSTEM ================= -->
+<style>
+.fl{display:flex;align-items:center;gap:6px;margin-bottom:8px;flex-wrap:nowrap}
+.nd{background:#fff;border:1.4px solid var(--p);color:var(--pd);border-radius:10px;padding:6px 9px;font-size:10.5px;font-weight:600;text-align:center;white-space:nowrap}
+.nd small{display:block;font-weight:400;color:var(--mu);font-size:8.5px}
+.nd.alt{border-style:dashed;border-color:#B49AA3}
+.nd.dk{background:var(--pd);color:#fff;border-color:var(--pd)}
+.ar{color:var(--p);font-size:15px;font-weight:700}
+.sw{width:58px}.sw div{height:36px;border-radius:9px;margin-bottom:3px}.sw span{font-size:8.5px;color:var(--mu);display:block;line-height:1.25}
+.sect{background:#fff;border:1px solid var(--ol);border-radius:14px;padding:12px 14px}
+.sect h4{font-size:12px;color:var(--pd);margin-bottom:8px}
+</style>
+<section class="page">
+ <div class="ph"><h2>User flow, system architecture &amp; design system</h2><span>Page 2</span></div>
+ <div style="display:flex;gap:14px;flex:1">
+  <div style="flex:1.45;display:flex;flex-direction:column;gap:12px">
+   <div class="sect">
+    <h4>User flow (numbers match the screens on pages 3–8)</h4>
+    <div class="fl"><div class="nd">① Splash</div><span class="ar">→</span><div class="nd">② Onboarding<small>3 slides</small></div><span class="ar">→</span><div class="nd">③ Login / Sign-up<small>or guest</small></div><span class="ar">→</span><div class="nd">④ Profile setup<small>first launch only</small></div><span class="ar">→</span><div class="nd dk">⑤ Home</div></div>
+    <div class="fl"><div class="nd dk">⑤ Home</div><span class="ar">→</span><div class="nd">⑥ Capture guide</div><span class="ar">→</span><div class="nd">⑦ Camera</div><span class="ar">→</span><div class="nd">⑧ Review &amp; crop</div><span class="ar">→</span><div class="nd">⑨ Analyzing</div><span class="ar">→</span><div class="nd dk">⑩ Result</div></div>
+    <div style="display:flex;gap:18px;margin-top:4px">
+     <div style="flex:1">
+      <div class="sm mu" style="margin-bottom:4px">From ⑩ Result</div>
+      <div class="fl"><div class="nd">⑪ Why this result?<small>fuzzy explanation</small></div></div>
+      <div class="fl"><div class="nd">⑫ Diet plan</div><span class="ar">→</span><div class="nd">⑬ 7-day meal plan</div></div>
+      <div class="fl"><div class="nd">⑮ Report &amp; share<small>PDF · nearby labs</small></div></div>
+     </div>
+     <div style="flex:1">
+      <div class="sm mu" style="margin-bottom:4px">From ⑤ Home / bottom navigation</div>
+      <div class="fl"><div class="nd">⑭ History &amp; trends</div></div>
+      <div class="fl"><div class="nd">⑰ Profile &amp; settings</div></div>
+      <div class="sm mu" style="margin:6px 0 4px">From ⑧ / ⑨ when the photo is unusable</div>
+      <div class="fl"><div class="nd alt">⑯ Image-quality error</div><span class="ar">→</span><div class="nd alt">⑦ Retake</div></div>
+     </div>
+    </div>
+   </div>
+   <div class="sect">
+    <h4>System architecture</h4>
+    <div class="fl" style="flex-wrap:wrap;row-gap:8px">
+     <div class="nd" style="border-color:#0B6BCB;color:#0B4F94">Flutter app<small>Android · camera · dio/http</small></div>
+     <span class="ar" style="font-size:10px">HTTPS POST<br>/api/analyze →</span>
+     <div class="nd dk">Python API<small style="color:#F4D3DC">FastAPI or Flask</small></div>
+     <span class="ar">→</span>
+     <div class="nd">OpenCV<small>white-balance · ROI · LAB/HSV</small></div>
+     <span class="ar">→</span>
+     <div class="nd">Feature extraction<small>redness a*, erythema, pallor</small></div>
+     <span class="ar">→</span>
+     <div class="nd">scikit-fuzzy<small>rules → risk + Hb est.</small></div>
+     <span class="ar">→</span>
+     <div class="nd">Diet engine<small>rules + food DB</small></div>
+     <span class="ar">→</span>
+     <div class="nd" style="border-color:#0B6BCB;color:#0B4F94">JSON result<small>back to app</small></div>
+    </div>
+    <div class="sm mu" style="margin-top:6px">Request body: image (JPEG) + eye side + profile {age, sex, pregnant, diet}. Response: risk label, membership values, Hb estimate &amp; range, features, rules fired, diet plan.</div>
+   </div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:12px">
+   <div class="sect">
+    <h4>Colour palette (Material 3)</h4>
+    <div class="flex" style="gap:8px;align-items:flex-start">
+     <div class="sw"><div style="background:#B4264A"></div><span><b>Primary</b><br>#B4264A</span></div>
+     <div class="sw"><div style="background:#7A1734"></div><span><b>Primary dark</b><br>#7A1734</span></div>
+     <div class="sw"><div style="background:#FCE4EA;border:1px solid var(--ol)"></div><span><b>Container</b><br>#FCE4EA</span></div>
+     <div class="sw"><div style="background:#FFF8F9;border:1px solid var(--ol)"></div><span><b>Background</b><br>#FFF8F9</span></div>
+     <div class="sw"><div style="background:#1F1A1C"></div><span><b>Text</b><br>#1F1A1C</span></div>
+    </div>
+    <div class="lbl" style="margin:10px 0 6px">Risk-level colours (always shown with text labels)</div>
+    <div class="flex" style="gap:6px"><span class="pill p-ok">● Normal</span><span class="pill p-mi">● Mild</span><span class="pill p-mo">● Moderate</span><span class="pill p-se">● Severe</span></div>
+   </div>
+   <div class="sect">
+    <h4>Typography: Roboto (Android default)</h4>
+    <div style="font-size:20px;font-weight:700">Headline 20 / Bold</div>
+    <div style="font-size:14px;font-weight:600">Title 14 / Semibold</div>
+    <div style="font-size:12px">Body 12 / Regular: instructions, descriptions</div>
+    <div style="font-size:10px;color:var(--mu)">Label 10: captions, disclaimers, units</div>
+   </div>
+   <div class="sect">
+    <h4>Core components</h4>
+    <div class="flex" style="gap:8px;margin-bottom:8px"><div class="btn" style="width:110px">Filled button</div><div class="btn o" style="width:110px">Outlined</div><div class="btn t" style="width:70px">Text</div></div>
+    <div class="chips" style="margin-bottom:8px"><span class="chip on"><svg class="ic s"><use href="#i-check"/></svg>Vegetarian</span><span class="chip">Non-veg</span><span class="chip">Vegan</span></div>
+    <div class="flex" style="gap:8px"><div class="field" style="flex:1"><label>Email</label><div>ananya@mail.com</div></div><div class="tog"></div><div class="tog off"></div></div>
+    <div class="sm mu" style="margin-top:8px">Cards: 14 px radius, 1 px outline · Bottom nav: Home · Scan · History · Diet · Profile</div>
+   </div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= PAGE 3 : SPLASH / ONBOARDING / LOGIN ================= -->
+<section class="page">
+ <div class="ph"><h2>Splash, onboarding &amp; login</h2><span>Page 3 · Screens ①–③</span></div>
+ <div class="row">
+  <!-- 1 Splash -->
+  <div class="col">
+   <div class="phone"><div class="screen dark" style="background:linear-gradient(160deg,#C2304F,#6E1430);color:#fff">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:0 24px;text-align:center">
+     <div style="width:84px;height:84px;border-radius:26px;background:#fff;color:var(--p);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 20px rgba(0,0,0,.25);position:relative">
+      <svg style="width:46px;height:46px"><use href="#i-drop"/></svg>
+      <svg style="width:20px;height:20px;position:absolute;bottom:20px;color:var(--pd)"><use href="#i-eye"/></svg>
+     </div>
+     <div style="font-size:24px;font-weight:800;letter-spacing:.3px">HemoSense AI</div>
+     <div style="font-size:11.5px;opacity:.9">Anemia screening from a single eye photo</div>
+    </div>
+    <div style="text-align:center;padding-bottom:18px">
+     <div style="width:120px;height:3px;background:rgba(255,255,255,.25);border-radius:2px;margin:0 auto 10px"><div style="width:60%;height:100%;background:#fff;border-radius:2px"></div></div>
+     <div style="font-size:9px;opacity:.75">Fuzzy-logic powered · v1.0</div>
+    </div>
+    <div class="hi"></div>
+   </div></div>
+   <div class="notes"><h3>① Splash</h3><ul><li>Brand logo (blood drop + eye) on a gradient background.</li><li>While the splash shows, the app checks the backend (<i>/health</i>) and whether the user is logged in.</li><li>Goes to onboarding on the first launch and to Home after that.</li></ul></div>
+  </div>
+  <!-- 2 Onboarding -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="flex between" style="padding:6px 16px"><span></span><span style="color:var(--p);font-weight:600">Skip</span></div>
+    <div class="ct" style="justify-content:center;gap:14px;padding:0 18px">
+     <div class="img" style="box-shadow:0 6px 16px rgba(120,30,60,.18)"><svg viewBox="0 0 200 120"><use href="#eye"/></svg>
+      <div style="position:absolute;left:24%;top:52%;width:52%;height:38%;border:2px dashed #fff;border-radius:50%"></div></div>
+     <div style="text-align:center"><div class="h1">Snap your inner eyelid</div>
+      <div class="mu" style="margin-top:6px;font-size:11px">Gently pull down your lower eyelid and take a clear photo. The colour of this area can show signs of anemia.</div></div>
+     <div class="flex" style="justify-content:center;gap:5px"><span class="dot on"></span><span class="dot"></span><span class="dot"></span></div>
+    </div>
+    <div style="padding:0 16px 12px"><div class="btn">Next</div></div>
+    <div class="hi"></div>
+   </div></div>
+   <div class="notes"><h3>② Onboarding (3 swipeable slides)</h3><ul><li>Slide 1: <b>Snap your inner eyelid</b> (shown here).</li><li>Slide 2: <b>Smart fuzzy analysis</b>, which estimates your risk level and Hb range.</li><li>Slide 3: <b>Eat right</b>, with a personalised iron-rich diet plan.</li><li>Last slide shows the medical disclaimer with an "I understand" checkbox.</li></ul></div>
+  </div>
+  <!-- 3 Login -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="ct" style="padding:14px 18px;gap:10px">
+     <div style="width:44px;height:44px;border-radius:14px;background:var(--pl);color:var(--p);display:flex;align-items:center;justify-content:center;margin-top:8px"><svg class="ic l"><use href="#i-drop"/></svg></div>
+     <div><div class="h1">Welcome back</div><div class="mu" style="margin-top:3px">Log in to keep your scan history synced</div></div>
+     <div class="field flex" style="gap:8px"><svg class="ic s mu"><use href="#i-mail"/></svg><div style="flex:1"><label>Email</label><div>ananya.r@gmail.com</div></div></div>
+     <div class="field flex" style="gap:8px"><svg class="ic s mu"><use href="#i-lock"/></svg><div style="flex:1"><label>Password</label><div>••••••••••</div></div><svg class="ic s mu"><use href="#i-eye"/></svg></div>
+     <div style="text-align:right;color:var(--p);font-size:9.5px;font-weight:600">Forgot password?</div>
+     <div class="btn">Log in</div>
+     <div class="flex" style="gap:8px"><div style="flex:1;height:1px;background:var(--ol)"></div><span class="sm mu">or</span><div style="flex:1;height:1px;background:var(--ol)"></div></div>
+     <div class="btn o" style="border-color:#CBBEC3;color:var(--tx)"><svg class="ic"><use href="#i-google"/></svg>Continue with Google</div>
+     <div class="btn t">Continue as guest</div>
+     <div style="text-align:center;font-size:10px;margin-top:auto">New here? <span style="color:var(--p);font-weight:700">Create account</span></div>
+    </div>
+    <div class="hi"></div>
+   </div></div>
+   <div class="notes"><h3>③ Login / Sign-up</h3><ul><li>Email and password, or Google sign-in (e.g. Firebase Auth or JWT from the Python backend).</li><li><b>Guest mode</b> keeps history on the device only.</li><li>Sign-up screen (not shown) uses the same layout with name, email, password and confirm password.</li></ul></div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= PAGE 4 : PROFILE / HOME / GUIDE ================= -->
+<section class="page">
+ <div class="ph"><h2>Profile setup, home &amp; capture guide</h2><span>Page 4 · Screens ④–⑥</span></div>
+ <div class="row">
+  <!-- 4 Profile setup -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="appbar"><svg class="ic"><use href="#i-back"/></svg><span class="sp"></span><span class="sm mu">Step 1 of 1</span></div>
+    <div class="ct" style="gap:9px">
+     <div><div class="h1">Tell us about you</div><div class="mu sm" style="margin-top:3px">Normal Hb limits depend on age, sex and pregnancy (WHO cut-offs), so we use these to read your result.</div></div>
+     <div class="field"><label>Full name</label><div>Ananya Reddy</div></div>
+     <div class="flex" style="gap:8px"><div class="field" style="flex:1"><label>Age</label><div>24 yrs</div></div><div class="field" style="flex:1"><label>Weight (optional)</label><div>52 kg</div></div></div>
+     <div><div class="lbl" style="margin-bottom:5px">Sex</div><div class="chips"><span class="chip on"><svg class="ic s"><use href="#i-check"/></svg>Female</span><span class="chip">Male</span><span class="chip">Other</span></div></div>
+     <div class="card flex between" style="padding:7px 10px"><div><div class="b">Currently pregnant?</div><div class="sm mu">Changes the Hb threshold to 11.0 g/dL</div></div><div class="tog off"></div></div>
+     <div><div class="lbl" style="margin-bottom:5px">Diet preference</div><div class="chips"><span class="chip on"><svg class="ic s"><use href="#i-check"/></svg>Vegetarian</span><span class="chip">Eggetarian</span><span class="chip">Non-veg</span><span class="chip">Vegan</span></div></div>
+     <div><div class="lbl" style="margin-bottom:5px">Known conditions (optional)</div><div class="chips"><span class="chip">Heavy periods</span><span class="chip">Thalassemia</span><span class="chip">None</span></div></div>
+     <div class="btn" style="margin-top:auto">Continue</div>
+    </div>
+    <div class="hi"></div>
+   </div></div>
+   <div class="notes"><h3>④ Profile setup</h3><ul><li>Shown once after sign-up and editable later in Settings.</li><li>Age, sex and pregnancy are sent with each scan so the backend applies the right Hb cut-off.</li><li>Diet preference filters the foods in the diet plan.</li><li>The pregnancy toggle appears only when Female is selected.</li></ul></div>
+  </div>
+  <!-- 5 Home -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="flex between" style="padding:6px 14px 4px"><div><div class="sm mu">Friday, 13 Nov</div><div class="h2" style="font-size:15px">Hi, Ananya</div></div><div class="flex" style="gap:10px"><svg class="ic"><use href="#i-bell"/></svg><div class="av" style="border-radius:50%;font-weight:700">A</div></div></div>
+    <div class="ct" style="gap:9px">
+     <div style="border-radius:16px;padding:12px;color:#fff;background:linear-gradient(135deg,#C2304F,#7A1734);position:relative;overflow:hidden">
+      <div style="position:absolute;right:-18px;top:-18px;width:90px;height:90px;border-radius:50%;background:rgba(255,255,255,.08)"></div>
+      <div class="b" style="font-size:13px">Check for anemia</div>
+      <div style="font-size:9.5px;opacity:.9;margin:3px 0 10px;max-width:160px">Takes about 30 seconds with just your phone camera</div>
+      <div class="btn w" style="width:120px;height:30px"><svg class="ic s"><use href="#i-camera"/></svg>Start scan</div>
+     </div>
+     <div class="card">
+      <div class="flex between"><span class="sm mu">Last screening · 12 Nov</span><span class="pill p-mi">● Mild risk</span></div>
+      <div class="flex between" style="margin-top:6px;align-items:flex-end">
+       <div><div style="font-size:20px;font-weight:800">10.4 <span style="font-size:10px;font-weight:600" class="mu">g/dL est.</span></div><div class="sm" style="color:var(--ok)">▲ 0.3 since last scan</div></div>
+       <svg viewBox="0 0 90 34" style="width:92px;height:34px"><polyline points="2,28 24,24 46,21 68,15 88,10" fill="none" stroke="#B4264A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="88" cy="10" r="3" fill="#B4264A"/></svg>
+      </div>
+     </div>
+     <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+      <div class="card flex" style="padding:8px"><div class="av"><svg class="ic"><use href="#i-food"/></svg></div><div><div class="b">Diet plan</div><div class="sm mu">Today's meals</div></div></div>
+      <div class="card flex" style="padding:8px"><div class="av"><svg class="ic"><use href="#i-history"/></svg></div><div><div class="b">History</div><div class="sm mu">5 scans</div></div></div>
+      <div class="card flex" style="padding:8px"><div class="av"><svg class="ic"><use href="#i-file"/></svg></div><div><div class="b">Report</div><div class="sm mu">Share PDF</div></div></div>
+      <div class="card flex" style="padding:8px"><div class="av"><svg class="ic"><use href="#i-clinic"/></svg></div><div><div class="b">Find lab</div><div class="sm mu">Get Hb test</div></div></div>
+     </div>
+     <div class="card flex" style="background:#FFF6E3;border-color:#F4DFAE;align-items:flex-start"><svg class="ic" style="color:#A06C00"><use href="#i-leaf"/></svg><div><div class="b">Tip of the day</div><div class="sm mu">Squeeze lemon on your dal. Vitamin C can boost iron absorption by up to 3×.</div></div></div>
+    </div>
+    <nav class="bn"><a class="on"><span class="ib"><svg class="ic"><use href="#i-home"/></svg></span>Home</a><a><span class="ib"><svg class="ic"><use href="#i-camera"/></svg></span>Scan</a><a><span class="ib"><svg class="ic"><use href="#i-history"/></svg></span>History</a><a><span class="ib"><svg class="ic"><use href="#i-food"/></svg></span>Diet</a><a><span class="ib"><svg class="ic"><use href="#i-user"/></svg></span>Profile</a></nav>
+    <div class="hi" style="background:#fff"></div>
+   </div></div>
+   <div class="notes"><h3>⑤ Home dashboard</h3><ul><li>Main call to action: <b>Start scan</b>.</li><li>Card with the latest result: risk badge, estimated Hb and a mini trend.</li><li>Quick links: Diet plan, History, Report and Find lab.</li><li>Daily nutrition tip, rotated from the backend or a local list.</li><li>Bottom navigation with 5 tabs.</li></ul></div>
+  </div>
+  <!-- 6 Capture guide -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="appbar"><svg class="ic"><use href="#i-back"/></svg>How to capture</div>
+    <div class="ct" style="gap:9px">
+     <div class="img"><svg viewBox="0 0 200 120"><use href="#eye"/></svg>
+      <div style="position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.6);color:#fff;font-size:8.5px;padding:3px 7px;border-radius:8px">Pull lower lid down ↓ and look up ↑</div></div>
+     <div class="card" style="padding:4px 10px">
+      <div class="li"><div class="av" style="width:24px;height:24px"><svg class="ic s"><use href="#i-sun"/></svg></div><div><div class="b">Good, even light</div><div class="sm mu">Daylight or white light. Avoid yellow bulbs.</div></div></div>
+      <div class="li"><div class="av" style="width:24px;height:24px"><svg class="ic s"><use href="#i-eye"/></svg></div><div><div class="b">Show the inner eyelid</div><div class="sm mu">Gently pull the lower lid down with a clean finger</div></div></div>
+      <div class="li"><div class="av" style="width:24px;height:24px"><svg class="ic s"><use href="#i-camera"/></svg></div><div><div class="b">Hold 10–15 cm away</div><div class="sm mu">Keep the phone steady and let it focus</div></div></div>
+      <div class="li"><div class="av" style="width:24px;height:24px"><svg class="ic s"><use href="#i-x"/></svg></div><div><div class="b">No makeup or filters</div><div class="sm mu">Remove kajal/eyeliner and coloured lenses</div></div></div>
+     </div>
+     <div class="flex sm mu"><div style="width:13px;height:13px;border:1.4px solid #A89BA0;border-radius:3px"></div>Don't show this again</div>
+     <div class="btn" style="margin-top:auto"><svg class="ic s"><use href="#i-camera"/></svg>Open camera</div>
+     <div class="btn t" style="height:24px"><svg class="ic s"><use href="#i-image"/></svg>Upload from gallery</div>
+    </div>
+    <div class="hi"></div>
+   </div></div>
+   <div class="notes"><h3>⑥ Capture guide</h3><ul><li>Shown before every scan until "Don't show again" is ticked.</li><li>Shows the correct pose and 4 rules for a usable photo.</li><li>A short demo video or animation could replace the static image.</li><li>Gallery upload is useful for testing with dataset images.</li></ul></div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= PAGE 5 : CAMERA / REVIEW / ANALYZING ================= -->
+<section class="page">
+ <div class="ph"><h2>Capture &amp; analysis</h2><span>Page 5 · Screens ⑦–⑨</span></div>
+ <div class="row">
+  <!-- 7 Camera -->
+  <div class="col">
+   <div class="phone"><div class="screen dark" style="background:#0c0c0c;color:#fff">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="flex between" style="padding:6px 14px"><svg class="ic"><use href="#i-x"/></svg>
+     <div style="display:flex;background:rgba(255,255,255,.14);border-radius:14px;padding:2px;font-size:9.5px"><span style="padding:3px 10px;border-radius:12px;background:#fff;color:#000;font-weight:600">Left eye</span><span style="padding:3px 10px">Right eye</span></div>
+     <svg class="ic"><use href="#i-bolt"/></svg></div>
+    <div style="flex:1;position:relative;overflow:hidden">
+     <svg viewBox="40 0 120 120" preserveAspectRatio="xMidYMid slice" style="position:absolute;inset:0;width:100%;height:100%"><use href="#eye"/></svg>
+     <div style="position:absolute;inset:0;background:radial-gradient(ellipse 46% 22% at 50% 66%,transparent 96%,rgba(0,0,0,.55) 100%)"></div>
+     <div style="position:absolute;left:4%;top:44%;width:92%;height:44%;border:2.5px solid #fff;border-radius:50%"></div>
+     <div style="position:absolute;top:10px;left:0;right:0;text-align:center"><span style="background:rgba(0,0,0,.6);padding:4px 10px;border-radius:10px;font-size:9.5px">Fit the pink inner eyelid inside the oval</span></div>
+     <div style="position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:5px">
+      <span class="pill" style="background:rgba(46,125,50,.9);color:#fff"><svg class="ic s"><use href="#i-check"/></svg>Light</span>
+      <span class="pill" style="background:rgba(46,125,50,.9);color:#fff"><svg class="ic s"><use href="#i-check"/></svg>Focus</span>
+      <span class="pill" style="background:rgba(224,98,11,.95);color:#fff"><svg class="ic s"><use href="#i-alert"/></svg>Move closer</span>
+     </div>
+    </div>
+    <div class="flex" style="justify-content:space-around;padding:14px 0 10px">
+     <div style="width:36px;height:36px;border-radius:9px;overflow:hidden;border:1.5px solid #fff"><svg viewBox="40 20 120 80" style="width:100%;height:100%"><use href="#eye"/></svg></div>
+     <div style="width:62px;height:62px;border-radius:50%;border:4px solid #fff;padding:4px"><div style="width:100%;height:100%;border-radius:50%;background:#fff"></div></div>
+     <div style="width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center"><svg class="ic"><use href="#i-flip"/></svg></div>
+    </div>
+    <div class="hi"></div>
+   </div></div>
+   <div class="notes"><h3>⑦ Camera</h3><ul><li>Full-screen preview using the Flutter <i>camera</i> package, with an oval guide overlay.</li><li><b>Live quality checks</b> on the device: brightness, blur (Laplacian) and distance.</li><li>Left/right eye toggle, flash toggle and gallery shortcut.</li><li>Shutter is enabled only when all checks pass (or we just show a warning; to decide).</li></ul></div>
+  </div>
+  <!-- 8 Review & crop -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="appbar"><svg class="ic"><use href="#i-back"/></svg>Review photo</div>
+    <div class="ct" style="gap:9px">
+     <div class="img" style="background:#000"><svg viewBox="0 0 200 120"><use href="#eye"/></svg>
+      <div style="position:absolute;left:14%;top:50%;width:72%;height:42%;border:2px solid #fff;box-shadow:0 0 0 999px rgba(0,0,0,.42)"></div>
+      <div style="position:absolute;left:calc(14% - 4px);top:calc(50% - 4px);width:9px;height:9px;background:#fff;border-radius:2px"></div>
+      <div style="position:absolute;left:calc(86% - 5px);top:calc(50% - 4px);width:9px;height:9px;background:#fff;border-radius:2px"></div>
+      <div style="position:absolute;left:calc(14% - 4px);top:calc(92% - 5px);width:9px;height:9px;background:#fff;border-radius:2px"></div>
+      <div style="position:absolute;left:calc(86% - 5px);top:calc(92% - 5px);width:9px;height:9px;background:#fff;border-radius:2px"></div>
+     </div>
+     <div class="sm mu" style="text-align:center">Drag the box so it covers <b style="color:var(--tx)">only the pink inner eyelid</b></div>
+     <div class="card">
+      <div class="flex between"><span class="b">Image quality</span><span class="pill p-ok">86 / 100 · Good</span></div>
+      <div class="flex" style="margin-top:7px;gap:6px"><span class="sm mu" style="width:56px">Brightness</span><div class="bar"><i style="width:78%;background:var(--ok)"></i></div></div>
+      <div class="flex" style="margin-top:5px;gap:6px"><span class="sm mu" style="width:56px">Sharpness</span><div class="bar"><i style="width:90%;background:var(--ok)"></i></div></div>
+      <div class="flex" style="margin-top:5px;gap:6px"><span class="sm mu" style="width:56px">Eyelid area</span><div class="bar"><i style="width:68%;background:var(--mi)"></i></div></div>
+     </div>
+     <div class="card flex" style="padding:7px 10px"><svg class="ic s mu"><use href="#i-eye"/></svg><span class="sm">Left eye · 13 Nov 2026, 9:41 AM</span></div>
+     <div class="flex" style="margin-top:auto;gap:8px"><div class="btn o" style="flex:1"><svg class="ic s"><use href="#i-refresh"/></svg>Retake</div><div class="btn" style="flex:1.3">Analyze</div></div>
+    </div>
+    <div class="hi"></div>
+   </div></div>
+   <div class="notes"><h3>⑧ Review &amp; crop (ROI)</h3><ul><li>User checks the photo and adjusts the <b>region of interest</b> box on the conjunctiva.</li><li>The ROI coordinates are sent with the image, so the backend can skip automatic segmentation or use it as a check.</li><li>The quality score is computed on the device before upload.</li><li>A low score sends the user to screen ⑯.</li></ul></div>
+  </div>
+  <!-- 9 Analyzing -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="ct" style="align-items:center;padding:24px 18px 12px;gap:14px">
+     <svg viewBox="0 0 120 120" style="width:130px;height:130px;margin-top:10px">
+      <circle cx="60" cy="60" r="50" fill="none" stroke="#F2E4E8" stroke-width="10"/>
+      <circle cx="60" cy="60" r="50" fill="none" stroke="#B4264A" stroke-width="10" stroke-linecap="round" stroke-dasharray="213.6 314.2" transform="rotate(-90 60 60)"/>
+      <circle cx="60" cy="60" r="34" fill="#FCE4EA"/>
+      <text x="60" y="66" text-anchor="middle" font-size="18" font-weight="800" fill="#7A1734" font-family="Segoe UI,Roboto">68%</text>
+     </svg>
+     <div style="text-align:center"><div class="h1">Analyzing your scan</div><div class="mu sm" style="margin-top:4px">Usually takes 5–10 seconds</div></div>
+     <div class="card" style="width:100%;padding:4px 12px">
+      <div class="li"><span style="width:18px;height:18px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center"><svg class="ic s" style="width:11px"><use href="#i-check"/></svg></span><span>Uploading image securely</span></div>
+      <div class="li"><span style="width:18px;height:18px;border-radius:50%;background:var(--ok);color:#fff;display:flex;align-items:center;justify-content:center"><svg class="ic s" style="width:11px"><use href="#i-check"/></svg></span><span>Colour correction &amp; cropping</span></div>
+      <div class="li"><span style="width:18px;height:18px;border-radius:50%;border:2.5px solid var(--p);border-right-color:#F2E4E8"></span><span class="b">Extracting eyelid colour features</span></div>
+      <div class="li mu"><span style="width:18px;height:18px;border-radius:50%;border:2px solid #DCCBD1"></span><span>Fuzzy-logic risk inference</span></div>
+      <div class="li mu"><span style="width:18px;height:18px;border-radius:50%;border:2px solid #DCCBD1"></span><span>Building your diet plan</span></div>
+     </div>
+     <div class="btn t" style="margin-top:auto">Cancel</div>
+    </div>
+    <div class="hi"></div>
+   </div></div>
+   <div class="notes"><h3>⑨ Analyzing</h3><ul><li>Shows the backend pipeline steps, which also makes the process clear for the project demo.</li><li>Steps can be driven by real progress or simulated while one API call runs.</li><li>Timeout or offline leads to an error with Retry. Optionally, queue the scan and send it later.</li></ul></div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= PAGE 6 : RESULT / FUZZY / DIET ================= -->
+<section class="page">
+ <div class="ph"><h2>Results, explanation &amp; diet plan</h2><span>Page 6 · Screens ⑩–⑫</span></div>
+ <div class="row">
+  <!-- 10 Result -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="appbar"><svg class="ic"><use href="#i-x"/></svg>Your result<span class="sp"></span><svg class="ic"><use href="#i-share"/></svg></div>
+    <div class="ct" style="gap:8px">
+     <div class="card" style="text-align:center;padding:10px 10px 12px">
+      <svg viewBox="0 0 200 112" style="width:190px;height:106px">
+       <path d="M20 100 A80 80 0 0 1 43.4 43.4" stroke="#2E7D32" stroke-width="16" fill="none"/>
+       <path d="M44.6 42.3 A80 80 0 0 1 100 20" stroke="#E2A300" stroke-width="16" fill="none"/>
+       <path d="M101.6 20 A80 80 0 0 1 156.6 43.4" stroke="#E0620B" stroke-width="16" fill="none"/>
+       <path d="M157.7 44.6 A80 80 0 0 1 180 100" stroke="#C62828" stroke-width="16" fill="none"/>
+       <line x1="100" y1="100" x2="84.6" y2="40.5" stroke="#1F1A1C" stroke-width="4" stroke-linecap="round"/>
+       <circle cx="100" cy="100" r="7" fill="#1F1A1C"/>
+       <text x="18" y="111" font-size="8" fill="#6F6267" font-family="Segoe UI">Normal</text><text x="160" y="111" font-size="8" fill="#6F6267" font-family="Segoe UI">Severe</text>
+      </svg>
+      <div style="font-size:17px;font-weight:800;color:#8A6200;margin-top:2px">Mild Anemia Risk</div>
+      <div class="sm mu">Risk score 42 / 100 · Confidence 82%</div>
+     </div>
+     <div class="card flex between">
+      <div><div class="sm mu">Estimated haemoglobin</div><div style="font-size:19px;font-weight:800">10.4 <span class="sm mu" style="font-weight:600">g/dL</span></div><div class="sm mu">Likely range 9.8 – 11.0</div></div>
+      <div style="text-align:right"><div class="sm mu">Healthy for you</div><div class="b" style="font-size:13px;color:var(--ok)">≥ 12.0</div><div class="sm mu">Adult female (WHO)</div></div>
+     </div>
+     <div class="card" style="background:var(--mib);border-color:#F2DC9C"><div class="b">What this means</div><div class="sm" style="color:#5b4a1a;margin-top:2px">Your eyelid colour shows mild pallor. Improve iron intake and get a blood (CBC) test within 2–4 weeks to confirm.</div></div>
+     <div class="btn"><svg class="ic s"><use href="#i-food"/></svg>View my diet plan</div>
+     <div class="flex" style="gap:6px"><div class="btn o" style="flex:1;height:30px;font-size:10px">Why this result?</div><div class="btn o" style="flex:1;height:30px;font-size:10px">Find a lab</div></div>
+     <div class="flex sm mu" style="align-items:flex-start;gap:5px;margin-top:auto"><svg class="ic s" style="flex:none"><use href="#i-info"/></svg><span>Screening tool only, not a diagnosis. Always confirm with a laboratory Hb test.</span></div>
+    </div>
+    <div class="hi"></div>
+   </div></div>
+   <div class="notes"><h3>⑩ Result</h3><ul><li>A 4-zone gauge (Normal / Mild / Moderate / Severe) shows the fuzzy output score.</li><li>Estimated Hb with a range, compared with the WHO cut-off for this user.</li><li>Plain-language advice that changes with the level. <b>Severe</b> shows an urgent "see a doctor" banner.</li><li>Medical disclaimer is always visible.</li></ul></div>
+  </div>
+  <!-- 11 Why this result -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="appbar"><svg class="ic"><use href="#i-back"/></svg>Why this result?</div>
+    <div class="ct" style="gap:8px">
+     <div class="card">
+      <div class="lbl" style="margin-bottom:6px">1 · Colour features from your eyelid</div>
+      <div class="flex between sm"><span>Redness (LAB a*)</span><span class="b">14.2 · <span style="color:#8A6200">Low</span></span></div><div class="bar" style="margin:3px 0 6px"><i style="width:38%;background:#E2A300"></i></div>
+      <div class="flex between sm"><span>Erythema index</span><span class="b">0.38 · <span style="color:#8A6200">Low</span></span></div><div class="bar" style="margin:3px 0 6px"><i style="width:38%;background:#E2A300"></i></div>
+      <div class="flex between sm"><span>Pallor ratio</span><span class="b">0.62 · <span style="color:#A64300">High</span></span></div><div class="bar" style="margin-top:3px"><i style="width:62%;background:#E0620B"></i></div>
+     </div>
+     <div class="card">
+      <div class="lbl" style="margin-bottom:6px">2 · Fuzzy membership</div>
+      <div class="flex sm" style="gap:6px;margin-bottom:4px"><span style="width:52px">Normal</span><div class="bar"><i style="width:8%;background:var(--ok)"></i></div><span class="b" style="width:24px;text-align:right">0.08</span></div>
+      <div class="flex sm" style="gap:6px;margin-bottom:4px"><span style="width:52px" class="b">Mild</span><div class="bar"><i style="width:71%;background:#E2A300"></i></div><span class="b" style="width:24px;text-align:right">0.71</span></div>
+      <div class="flex sm" style="gap:6px;margin-bottom:4px"><span style="width:52px">Moderate</span><div class="bar"><i style="width:21%;background:#E0620B"></i></div><span class="b" style="width:24px;text-align:right">0.21</span></div>
+      <div class="flex sm" style="gap:6px"><span style="width:52px">Severe</span><div class="bar"><i style="width:0%"></i></div><span class="b" style="width:24px;text-align:right">0.00</span></div>
+     </div>
+     <div class="card">
+      <div class="lbl" style="margin-bottom:5px">3 · Rules that fired</div>
+      <div class="sm" style="background:#FBF4F6;border-radius:8px;padding:5px 7px;margin-bottom:4px;font-family:Consolas,monospace;font-size:8.6px">IF redness is <b>LOW</b> AND pallor is <b>HIGH</b><br>THEN risk is <b style="color:#8A6200">MILD</b> &nbsp;(0.71)</div>
+      <div class="sm" style="background:#FBF4F6;border-radius:8px;padding:5px 7px;font-family:Consolas,monospace;font-size:8.6px">IF redness is <b>V.LOW</b> AND erythema is <b>LOW</b><br>THEN risk is <b style="color:#A64300">MODERATE</b> (0.21)</div>
+     </div>
+     <div class="card flex between" style="background:var(--pl);border-color:#F2C6D2"><span class="b">Defuzzified (centroid) score</span><span style="font-size:15px;font-weight:800;color:var(--pd)">42</span></div>
+    </div>
+    <div class="hi"></div>
+   </div></div>
+   <div class="notes"><h3>⑪ Why this result? (explainability)</h3><ul><li>Shows the full fuzzy pipeline: <b>inputs → memberships → rules → defuzzified score</b>.</li><li>Good for the capstone viva because it shows the logic is transparent and not a black box.</li><li>All values come from the backend JSON response.</li><li>Could be hidden behind a "Developer mode" switch for normal users.</li></ul></div>
+  </div>
+  <!-- 12 Diet plan -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="appbar">Your diet plan<span class="sp"></span><span class="pill p-mi">Mild risk</span></div>
+    <div class="ct" style="gap:8px">
+     <div class="chips"><span class="chip on">Vegetarian</span><span class="chip">South Indian</span><span class="chip">Budget-friendly</span></div>
+     <div class="card" style="display:flex;justify-content:space-around;text-align:center;padding:8px 4px">
+      <div><div style="font-size:14px;font-weight:800;color:var(--pd)">29 mg</div><div class="sm mu">Iron / day</div></div>
+      <div style="width:1px;background:var(--ol)"></div>
+      <div><div style="font-size:14px;font-weight:800;color:var(--pd)">65 mg</div><div class="sm mu">Vitamin C</div></div>
+      <div style="width:1px;background:var(--ol)"></div>
+      <div><div style="font-size:14px;font-weight:800;color:var(--pd)">220 µg</div><div class="sm mu">Folate</div></div>
+     </div>
+     <div class="lbl">Top iron-rich foods for you</div>
+     <div class="card" style="padding:2px 10px">
+      <div class="li"><div class="av" style="background:#E6F2E2;color:#2E7D32"><svg class="ic s"><use href="#i-leaf"/></svg></div><div style="flex:1"><div class="b">Masoor dal (1 cup)</div><div class="sm mu">Lentils · protein + folate</div></div><span class="b" style="color:var(--pd)">6.6 mg</span></div>
+      <div class="li"><div class="av" style="background:#E6F2E2;color:#2E7D32"><svg class="ic s"><use href="#i-leaf"/></svg></div><div style="flex:1"><div class="b">Spinach / palak (100 g)</div><div class="sm mu">Cook it to absorb more</div></div><span class="b" style="color:var(--pd)">2.7 mg</span></div>
+      <div class="li"><div class="av" style="background:#FFF1DA;color:#A06C00"><svg class="ic s"><use href="#i-food"/></svg></div><div style="flex:1"><div class="b">Pumpkin seeds (30 g)</div><div class="sm mu">Easy snack</div></div><span class="b" style="color:var(--pd)">2.5 mg</span></div>
+      <div class="li"><div class="av" style="background:#FFF1DA;color:#A06C00"><svg class="ic s"><use href="#i-food"/></svg></div><div style="flex:1"><div class="b">Ragi (100 g)</div><div class="sm mu">Finger millet · roti / dosa</div></div><span class="b" style="color:var(--pd)">3.9 mg</span></div>
+     </div>
+     <div class="flex" style="gap:6px;align-items:stretch">
+      <div class="card" style="flex:1;padding:7px 8px;background:#EEF7EC;border-color:#CFE6CA"><div class="b sm" style="color:#2E7D32">✓ Pair with</div><div class="sm">Lemon, amla, orange, guava</div></div>
+      <div class="card" style="flex:1;padding:7px 8px;background:#FDECEC;border-color:#F3CACA"><div class="b sm" style="color:#C62828">✕ Avoid with meals</div><div class="sm">Tea / coffee within 1 h, calcium tablets</div></div>
+     </div>
+     <div class="btn" style="margin-top:auto">See 7-day meal plan</div>
+    </div>
+    <nav class="bn"><a><span class="ib"><svg class="ic"><use href="#i-home"/></svg></span>Home</a><a><span class="ib"><svg class="ic"><use href="#i-camera"/></svg></span>Scan</a><a><span class="ib"><svg class="ic"><use href="#i-history"/></svg></span>History</a><a class="on"><span class="ib"><svg class="ic"><use href="#i-food"/></svg></span>Diet</a><a><span class="ib"><svg class="ic"><use href="#i-user"/></svg></span>Profile</a></nav>
+    <div class="hi" style="background:#fff"></div>
+   </div></div>
+   <div class="notes"><h3>⑫ Diet plan ("Dietary Intelligence")</h3><ul><li>Daily targets change with risk level, age, sex and pregnancy (e.g. ICMR RDA).</li><li>Foods are filtered by diet preference and ranked by iron per serving.</li><li>Absorption tips: what to pair foods with and what to avoid.</li><li>Food data comes from a backend food DB (e.g. Indian Food Composition Tables).</li></ul></div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= PAGE 7 : MEAL PLAN / HISTORY / REPORT ================= -->
+<section class="page">
+ <div class="ph"><h2>Meal plan, history &amp; report</h2><span>Page 7 · Screens ⑬–⑮</span></div>
+ <div class="row">
+  <!-- 13 Meal plan -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="appbar"><svg class="ic"><use href="#i-back"/></svg>7-day meal plan</div>
+    <div class="ct" style="gap:8px">
+     <div class="flex" style="gap:4px;justify-content:space-between">
+      <div style="text-align:center;padding:4px 6px;border-radius:10px" class="sm mu">Mon<br><b style="color:var(--tx)">9</b></div>
+      <div style="text-align:center;padding:4px 6px;border-radius:10px;background:var(--p);color:#fff" class="sm">Tue<br><b>10</b></div>
+      <div style="text-align:center;padding:4px 6px" class="sm mu">Wed<br><b style="color:var(--tx)">11</b></div>
+      <div style="text-align:center;padding:4px 6px" class="sm mu">Thu<br><b style="color:var(--tx)">12</b></div>
+      <div style="text-align:center;padding:4px 6px" class="sm mu">Fri<br><b style="color:var(--tx)">13</b></div>
+      <div style="text-align:center;padding:4px 6px" class="sm mu">Sat<br><b style="color:var(--tx)">14</b></div>
+      <div style="text-align:center;padding:4px 6px" class="sm mu">Sun<br><b style="color:var(--tx)">15</b></div>
+     </div>
+     <div class="card" style="padding:8px 10px"><div class="flex between sm"><span class="b">Iron today</span><span><b style="color:var(--pd)">25.5</b> / 29 mg</span></div><div class="bar" style="margin-top:5px;height:8px"><i style="width:88%;background:var(--p)"></i></div></div>
+     <div class="card" style="padding:2px 10px">
+      <div class="li"><div style="width:52px" class="sm mu b">Breakfast</div><div style="flex:1"><div class="b">Ragi dosa + tomato chutney</div><div class="sm mu">+ 1 orange</div></div><span class="sm b" style="color:var(--pd)">5.2 mg</span></div>
+      <div class="li"><div style="width:52px" class="sm mu b">Snack</div><div style="flex:1"><div class="b">Roasted chana + jaggery</div><div class="sm mu">30 g + 10 g</div></div><span class="sm b" style="color:var(--pd)">3.1 mg</span></div>
+      <div class="li"><div style="width:52px" class="sm mu b">Lunch</div><div style="flex:1"><div class="b">Palak dal, brown rice</div><div class="sm mu">+ cucumber salad with lemon</div></div><span class="sm b" style="color:var(--pd)">7.4 mg</span></div>
+      <div class="li"><div style="width:52px" class="sm mu b">Evening</div><div style="flex:1"><div class="b">Dates &amp; pumpkin seeds</div><div class="sm mu">3 dates + 1 tbsp seeds</div></div><span class="sm b" style="color:var(--pd)">3.0 mg</span></div>
+      <div class="li"><div style="width:52px" class="sm mu b">Dinner</div><div style="flex:1"><div class="b">Rajma curry + 2 rotis</div><div class="sm mu">+ amla pickle</div></div><span class="sm b" style="color:var(--pd)">6.8 mg</span></div>
+     </div>
+     <div class="flex" style="gap:6px;margin-top:auto"><div class="btn o" style="flex:1;font-size:10px"><svg class="ic s"><use href="#i-refresh"/></svg>Swap a meal</div><div class="btn" style="flex:1;font-size:10px"><svg class="ic s"><use href="#i-bell"/></svg>Meal reminders</div></div>
+    </div>
+    <div class="hi"></div>
+   </div></div>
+   <div class="notes"><h3>⑬ 7-day meal plan</h3><ul><li>Day picker and a progress bar for daily iron intake.</li><li>5 meals, each showing its iron content. "Swap" asks the backend for an alternative with similar iron.</li><li>Optional: let users tick off meals they ate to track adherence.</li><li>Optional: meal reminder notifications.</li></ul></div>
+  </div>
+  <!-- 14 History -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="appbar">History &amp; trends</div>
+    <div class="ct" style="gap:8px">
+     <div style="display:flex;background:#F1E6EA;border-radius:16px;padding:3px" class="sm"><span style="flex:1;text-align:center;padding:4px">1M</span><span style="flex:1;text-align:center;padding:4px;background:#fff;border-radius:13px;font-weight:700;color:var(--pd)">3M</span><span style="flex:1;text-align:center;padding:4px">6M</span><span style="flex:1;text-align:center;padding:4px">All</span></div>
+     <div class="card" style="padding:8px 8px 4px">
+      <div class="flex between" style="padding:0 2px"><span class="b">Estimated Hb (g/dL)</span><span class="pill p-ok"><svg class="ic s" style="width:10px"><use href="#i-up"/></svg>+1.1</span></div>
+      <svg viewBox="0 0 240 118" style="width:100%;margin-top:4px">
+       <rect x="24" y="8" width="210" height="34" fill="#E3F3E4" opacity=".6"/>
+       <text x="228" y="18" text-anchor="end" font-size="7" fill="#2E7D32" font-family="Segoe UI">Healthy ≥ 12.0</text>
+       <line x1="24" y1="42" x2="234" y2="42" stroke="#2E7D32" stroke-dasharray="3 3" stroke-width="1"/>
+       <g font-size="7" fill="#8a7d82" font-family="Segoe UI"><text x="2" y="12">13</text><text x="2" y="45">12</text><text x="2" y="78">10</text><text x="6" y="104">8</text>
+       <text x="24" y="115">30 Sep</text><text x="70" y="115">14 Oct</text><text x="118" y="115">29 Oct</text><text x="164" y="115">5 Nov</text><text x="206" y="115">12 Nov</text></g>
+       <line x1="24" y1="101" x2="234" y2="101" stroke="#EEE3E7"/><line x1="24" y1="75" x2="234" y2="75" stroke="#EEE3E7"/>
+       <polyline points="34,85 82,80 130,76 176,71 218,67" fill="none" stroke="#B4264A" stroke-width="2.2" stroke-linejoin="round"/>
+       <g fill="#fff" stroke="#B4264A" stroke-width="2"><circle cx="34" cy="85" r="3"/><circle cx="82" cy="80" r="3"/><circle cx="130" cy="76" r="3"/><circle cx="176" cy="71" r="3"/><circle cx="218" cy="67" r="3.5" fill="#B4264A"/></g>
+      </svg>
+     </div>
+     <div class="lbl">All scans</div>
+     <div class="card" style="padding:2px 10px">
+      <div class="li"><div class="av" style="background:var(--mib);color:#8A6200"><svg class="ic s"><use href="#i-eye"/></svg></div><div style="flex:1"><div class="b">12 Nov · Left eye</div><div class="sm mu">10.4 g/dL · score 42</div></div><span class="pill p-mi">Mild</span><svg class="ic s mu"><use href="#i-chev"/></svg></div>
+      <div class="li"><div class="av" style="background:var(--mib);color:#8A6200"><svg class="ic s"><use href="#i-eye"/></svg></div><div style="flex:1"><div class="b">5 Nov · Right eye</div><div class="sm mu">10.1 g/dL · score 47</div></div><span class="pill p-mi">Mild</span><svg class="ic s mu"><use href="#i-chev"/></svg></div>
+      <div class="li"><div class="av" style="background:var(--mob);color:#A64300"><svg class="ic s"><use href="#i-eye"/></svg></div><div style="flex:1"><div class="b">29 Oct · Left eye</div><div class="sm mu">9.8 g/dL · score 56</div></div><span class="pill p-mo">Moderate</span><svg class="ic s mu"><use href="#i-chev"/></svg></div>
+      <div class="li"><div class="av" style="background:var(--mob);color:#A64300"><svg class="ic s"><use href="#i-eye"/></svg></div><div style="flex:1"><div class="b">14 Oct · Left eye</div><div class="sm mu">9.6 g/dL · score 60</div></div><span class="pill p-mo">Moderate</span><svg class="ic s mu"><use href="#i-chev"/></svg></div>
+     </div>
+    </div>
+    <nav class="bn"><a><span class="ib"><svg class="ic"><use href="#i-home"/></svg></span>Home</a><a><span class="ib"><svg class="ic"><use href="#i-camera"/></svg></span>Scan</a><a class="on"><span class="ib"><svg class="ic"><use href="#i-history"/></svg></span>History</a><a><span class="ib"><svg class="ic"><use href="#i-food"/></svg></span>Diet</a><a><span class="ib"><svg class="ic"><use href="#i-user"/></svg></span>Profile</a></nav>
+    <div class="hi" style="background:#fff"></div>
+   </div></div>
+   <div class="notes"><h3>⑭ History &amp; trends</h3><ul><li>Line chart of estimated Hb over time against the healthy threshold (e.g. <i>fl_chart</i> package).</li><li>Time-range filter and a trend badge.</li><li>Tapping a scan reopens its full result (⑩).</li><li>Stored locally (sqflite/Hive) and/or synced to the backend DB.</li></ul></div>
+  </div>
+  <!-- 15 Report -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="appbar"><svg class="ic"><use href="#i-back"/></svg>Screening report</div>
+    <div class="ct" style="gap:9px">
+     <div style="background:#fff;border-radius:6px;box-shadow:0 3px 12px rgba(80,20,40,.16);padding:10px 11px;font-size:8px;line-height:1.4">
+      <div class="flex between" style="border-bottom:2px solid var(--p);padding-bottom:5px;margin-bottom:6px"><div class="flex" style="gap:4px;color:var(--p)"><svg class="ic s"><use href="#i-drop"/></svg><b style="font-size:10px;color:var(--pd)">HemoSense AI Report</b></div><span class="mu">12 Nov 2026</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:2px 8px"><span class="mu">Name</span><span>Ananya Reddy</span><span class="mu">Age / Sex</span><span>24 / Female</span><span class="mu">Eye</span><span>Left</span></div>
+      <div style="display:flex;gap:6px;margin:7px 0"><div style="width:62px;border-radius:4px;overflow:hidden"><svg viewBox="20 50 160 70" style="display:block;width:100%"><use href="#eye"/></svg></div><div><div class="b" style="font-size:9.5px;color:#8A6200">Mild anemia risk</div><div>Est. Hb: <b>10.4 g/dL</b> (9.8–11.0)</div><div>Score 42 · Confidence 82%</div></div></div>
+      <div class="b" style="margin-bottom:2px">Features</div><div class="mu">a* 14.2 · Erythema 0.38 · Pallor 0.62</div>
+      <div class="b" style="margin:5px 0 2px">Recommendation</div><div class="mu">Iron-rich vegetarian diet. Confirm with a CBC test within 2–4 weeks.</div>
+      <div style="margin-top:6px;padding-top:4px;border-top:1px solid var(--ol);font-size:7px" class="mu">Screening only. Not a medical diagnosis.</div>
+     </div>
+     <div class="flex" style="gap:6px"><div class="btn" style="flex:1;font-size:10px"><svg class="ic s"><use href="#i-file"/></svg>Download PDF</div><div class="btn o" style="flex:1;font-size:10px"><svg class="ic s"><use href="#i-share"/></svg>Share</div></div>
+     <div class="lbl">Get a confirmatory blood test</div>
+     <div class="card" style="padding:2px 10px">
+      <div class="li"><div class="av"><svg class="ic s"><use href="#i-clinic"/></svg></div><div style="flex:1"><div class="b">Govt. Primary Health Centre</div><div class="sm mu">1.2 km · Free Hb test</div></div><svg class="ic s mu"><use href="#i-chev"/></svg></div>
+      <div class="li"><div class="av"><svg class="ic s"><use href="#i-clinic"/></svg></div><div style="flex:1"><div class="b">City Diagnostics Lab</div><div class="sm mu">2.0 km · CBC from ₹250</div></div><svg class="ic s mu"><use href="#i-chev"/></svg></div>
+     </div>
+    </div>
+    <div class="hi"></div>
+   </div></div>
+   <div class="notes"><h3>⑮ Report &amp; share</h3><ul><li>One-page PDF report built on the device (<i>pdf</i> + <i>printing</i> packages) to show a doctor.</li><li>Share through WhatsApp or email using the Android share sheet.</li><li>Nearby labs open in Google Maps (simple intent), so no Maps API key is needed for v1.</li></ul></div>
+  </div>
+ </div>
+</section>
+
+<!-- ================= PAGE 8 : ERROR / SETTINGS / QUESTIONS ================= -->
+<section class="page">
+ <div class="ph"><h2>Error state, settings &amp; open questions</h2><span>Page 8 · Screens ⑯–⑰</span></div>
+ <div class="row">
+  <!-- 16 Error -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="appbar"><svg class="ic"><use href="#i-back"/></svg>Review photo</div>
+    <div class="ct" style="gap:9px">
+     <div class="img" style="background:#000"><svg viewBox="0 0 200 120" style="filter:url(#blur) brightness(.42)"><use href="#eye"/></svg>
+      <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center"><span class="pill p-se" style="font-size:10px;padding:4px 10px"><svg class="ic s"><use href="#i-alert"/></svg>Not usable</span></div></div>
+     <div class="card" style="background:var(--seb);border-color:#F2C4C4">
+      <div class="b" style="color:var(--se);font-size:12px">We couldn't analyze this photo</div>
+      <div class="sm" style="margin-top:2px;color:#6b2b2b">Results from a poor photo can be wrong, so please retake it.</div>
+     </div>
+     <div class="card" style="padding:2px 10px">
+      <div class="li"><span class="pill p-se">✕</span><div style="flex:1"><div class="b">Too dark</div><div class="sm mu">Brightness 21% (need &gt; 45%)</div></div></div>
+      <div class="li"><span class="pill p-se">✕</span><div style="flex:1"><div class="b">Blurry</div><div class="sm mu">Hold steady and tap to focus</div></div></div>
+      <div class="li"><span class="pill p-mi">!</span><div style="flex:1"><div class="b">Eyelid barely visible</div><div class="sm mu">Pull the lower lid down a little more</div></div></div>
+     </div>
+     <div class="btn" style="margin-top:auto"><svg class="ic s"><use href="#i-camera"/></svg>Retake photo</div>
+     <div class="btn t" style="height:24px">View capture guide</div>
+    </div>
+    <div class="hi"></div>
+   </div></div>
+   <div class="notes"><h3>⑯ Image-quality error</h3><ul><li>Triggered by on-device checks (⑧) or a backend rejection (ROI not found, glare, etc.).</li><li>Lists the specific problems found, with how to fix each.</li><li>Similar screens are needed for <b>No internet</b> and <b>Server unavailable</b>.</li></ul></div>
+  </div>
+  <!-- 17 Settings -->
+  <div class="col">
+   <div class="phone"><div class="screen">
+    <div class="sb"><span>9:41</span><span class="r"><span class="sig"><i style="height:3px"></i><i style="height:5px"></i><i style="height:7px"></i><i style="height:8px"></i></span><span class="bat"><i></i></span></span></div>
+    <div class="appbar">Profile &amp; settings</div>
+    <div class="ct" style="gap:7px">
+     <div class="card flex"><div class="av" style="width:40px;height:40px;border-radius:50%;font-size:16px;font-weight:800">A</div><div style="flex:1"><div class="b" style="font-size:12px">Ananya Reddy</div><div class="sm mu">24 yrs · Female · Vegetarian</div></div><span class="b sm" style="color:var(--p)">Edit</span></div>
+     <div class="lbl">Preferences</div>
+     <div class="card" style="padding:2px 10px">
+      <div class="li"><svg class="ic s mu"><use href="#i-bell"/></svg><div style="flex:1"><div class="b">Re-scan reminder</div><div class="sm mu">Every 2 weeks</div></div><div class="tog"></div></div>
+      <div class="li"><svg class="ic s mu"><use href="#i-food"/></svg><div style="flex:1"><div class="b">Meal reminders</div></div><div class="tog off"></div></div>
+      <div class="li"><svg class="ic s mu"><use href="#i-info"/></svg><div style="flex:1"><div class="b">Language</div></div><span class="sm mu">English</span><svg class="ic s mu"><use href="#i-chev"/></svg></div>
+     </div>
+     <div class="lbl">Privacy</div>
+     <div class="card" style="padding:2px 10px">
+      <div class="li"><svg class="ic s mu"><use href="#i-lock"/></svg><div style="flex:1"><div class="b">Delete photos after analysis</div><div class="sm mu">Only results are stored</div></div><div class="tog"></div></div>
+      <div class="li"><svg class="ic s mu"><use href="#i-file"/></svg><div style="flex:1"><div class="b">Export / delete my data</div></div><svg class="ic s mu"><use href="#i-chev"/></svg></div>
+     </div>
+     <div class="lbl">Developer</div>
+     <div class="card" style="padding:2px 10px">
+      <div class="li"><svg class="ic s mu"><use href="#i-server"/></svg><div style="flex:1"><div class="b">Backend URL</div><div class="sm mu" style="font-family:Consolas,monospace">http://192.168.1.8:8000</div></div><span class="pill p-ok">● Online</span></div>
+      <div class="li"><svg class="ic s mu"><use href="#i-gear"/></svg><div style="flex:1"><div class="b">Show fuzzy details</div></div><div class="tog"></div></div>
+     </div>
+     <div class="btn t" style="height:24px;color:var(--se)">Log out</div>
+    </div>
+    <nav class="bn"><a><span class="ib"><svg class="ic"><use href="#i-home"/></svg></span>Home</a><a><span class="ib"><svg class="ic"><use href="#i-camera"/></svg></span>Scan</a><a><span class="ib"><svg class="ic"><use href="#i-history"/></svg></span>History</a><a><span class="ib"><svg class="ic"><use href="#i-food"/></svg></span>Diet</a><a class="on"><span class="ib"><svg class="ic"><use href="#i-user"/></svg></span>Profile</a></nav>
+    <div class="hi" style="background:#fff"></div>
+   </div></div>
+   <div class="notes"><h3>⑰ Profile &amp; settings</h3><ul><li>Edit the health profile, which affects thresholds and diet.</li><li>Reminders, language and privacy controls.</li><li><b>Developer</b> section: backend URL with a status check, useful when the laptop's IP changes during demos.</li></ul></div>
+  </div>
+  <!-- Open questions -->
+  <div class="col" style="width:318px">
+   <div style="background:#fff;border:1.5px solid var(--p);border-radius:18px;padding:14px 16px;height:568px;display:flex;flex-direction:column">
+    <div class="flex" style="gap:8px;margin-bottom:8px"><div class="av" style="background:var(--p);color:#fff"><svg class="ic"><use href="#i-info"/></svg></div><div style="font-size:14px;font-weight:700;color:var(--pd)">Decisions for review</div></div>
+    <div style="font-size:9.8px;line-height:1.45;color:#3b3337">
+     <ol style="margin-left:14px;display:flex;flex-direction:column;gap:6px">
+      <li><b>Login:</b> required, optional (guest mode as shown), or none? Firebase Auth or our own Python auth?</li>
+      <li><b>Profile data:</b> keep age, sex and pregnancy for WHO thresholds? Add weight or known conditions?</li>
+      <li><b>Capture:</b> one eye per scan, or both eyes averaged? Use flash or not?</li>
+      <li><b>ROI:</b> manual crop box (⑧), automatic segmentation on the backend, or both?</li>
+      <li><b>Result:</b> show the estimated Hb number, or only the risk category (safer if the model isn't calibrated)?</li>
+      <li><b>Explainability (⑪):</b> show to all users or only in developer mode?</li>
+      <li><b>Diet:</b> Indian/regional food focus? Which food database? Include the 7-day plan in v1?</li>
+      <li><b>Extras for v1:</b> PDF report, nearby labs, reminders, multiple languages (English/Hindi/Telugu)?</li>
+      <li><b>Storage:</b> history on the device only, or also in a backend DB (SQLite/PostgreSQL)? Keep or delete images?</li>
+      <li><b>Optional add-on:</b> a short symptom questionnaire (fatigue, dizziness) as an extra fuzzy input to improve accuracy?</li>
+     </ol>
+    </div>
+    <div style="margin-top:auto;background:var(--pl);border-radius:12px;padding:8px 10px;font-size:9.3px;color:var(--pd)"><b>Next step:</b> once these are decided, I'll create the Flutter project with these screens and the Python backend skeleton.</div>
+   </div>
+  </div>
+ </div>
+</section>
+
+</body>
+</html>

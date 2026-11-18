@@ -1,0 +1,66 @@
+{
+  "source": "patient-level 5-fold CV, live pipeline, ANFIS, rule p >= 0.5, n = 215",
+  "label_rule": "High >= 90 % observed accuracy, Medium 75-90 %, Low < 75 %",
+  "bins": [
+    {
+      "certainty_from": 0.5,
+      "certainty_to": 0.6,
+      "n": 28,
+      "correct": 14,
+      "accuracy": 0.5,
+      "ci95": [
+        0.3263284683244634,
+        0.6736715316755366
+      ],
+      "label": "Low"
+    },
+    {
+      "certainty_from": 0.6,
+      "certainty_to": 0.7,
+      "n": 26,
+      "correct": 17,
+      "accuracy": 0.6538461538461539,
+      "ci95": [
+        0.46220229009632996,
+        0.8058798502714787
+      ],
+      "label": "Low"
+    },
+    {
+      "certainty_from": 0.7,
+      "certainty_to": 0.8,
+      "n": 20,
+      "correct": 14,
+      "accuracy": 0.7,
+      "ci95": [
+        0.4810232237710206,
+        0.854524726031006
+      ],
+      "label": "Low"
+    },
+    {
+      "certainty_from": 0.8,
+      "certainty_to": 0.9,
+      "n": 72,
+      "correct": 61,
+      "accuracy": 0.8472222222222222,
+      "ci95": [
+        0.7467749821453958,
+        0.9124938096522456
+      ],
+      "label": "Medium"
+    },
+    {
+      "certainty_from": 0.9,
+      "certainty_to": 1.0,
+      "n": 69,
+      "correct": 65,
+      "accuracy": 0.9420289855072463,
+      "ci95": [
+        0.8602055747557683,
+        0.9772279796966324
+      ],
+      "label": "High"
+    }
+  ]
+}
